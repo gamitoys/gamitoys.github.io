@@ -7,194 +7,99 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="theme-color" content="#02140a" />
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<title>bunbofy — ダークインクの逆襲</title>
+<title>bunbofy v2</title>
 <style>
-  :root { --g: #7dff9a; --gd: #1cff6a; --bg: #02140a; }
-  * { box-sizing: border-box; touch-action: none; -webkit-user-select: none; user-select: none; }
-  html, body { margin:0; padding:0; width:100%; height:100%; background:#000; overflow:hidden; font-family: "SF Mono", "Menlo", "Hiragino Kaku Gothic ProN", monospace; }
-  canvas { display:block; width:100%; height:100%; background: var(--bg); }
-  #hud { position:fixed; inset:0; pointer-events:none; color:var(--g); text-shadow: 0 0 8px #1cff6a88; }
-  #title { position:absolute; top: max(12px, env(safe-area-inset-top)); left:0; right:0; text-align:center; letter-spacing:.08em; }
-  #title h1 { margin:0; font-size:22px; font-weight:800; }
-  #title p { margin:2px 0 0; font-size:11px; opacity:.85; }
-  #stats { position:absolute; top: max(56px, calc(env(safe-area-inset-top) + 44px)); left:12px; font-size:13px; line-height:1.5; }
-  #msg { position:absolute; left:50%; top:42%; transform:translate(-50%,-50%); text-align:center; font-size:16px; max-width:86vw; }
-  #padL, #padR { position:fixed; bottom: max(18px, env(safe-area-inset-bottom)); width:120px; height:120px; pointer-events:auto; opacity:.55; }
-  #padL { left:16px; }
-  #padR { right:16px; }
-  .ring { width:100%; height:100%; border:2px solid var(--g); border-radius:50%; box-shadow: 0 0 12px #1cff6a55 inset, 0 0 10px #1cff6a44; position:relative; }
-  #stick { position:absolute; width:46px; height:46px; border-radius:50%; background: #7dff9a55; border:2px solid var(--g); left:37px; top:37px; }
-  #shotBtn { position:absolute; inset:18px; border-radius:50%; border:2px solid var(--g); background:#7dff9a22; color:var(--g); display:flex; align-items:center; justify-content:center; font-size:13px; letter-spacing:.1em; }
-</style>
-</head>
+*{box-sizing:border-box;touch-action:none;-webkit-user-select:none;user-select:none}
+html,body{margin:0;width:100%;height:100%;background:#000;overflow:hidden;font-family:Menlo,monospace}
+canvas{display:block;width:100%;height:100%;background:#02140a}
+#hud{position:fixed;inset:0;pointer-events:none;color:#7dff9a;text-shadow:0 0 8px #1cff6a88}
+#title{position:absolute;top:max(12px,env(safe-area-inset-top));left:0;right:0;text-align:center}
+#title h1{margin:0;font-size:22px}#title p{margin:2px 0 0;font-size:11px;opacity:.85}
+#stats{position:absolute;top:max(56px,calc(env(safe-area-inset-top)+44px));left:12px;font-size:13px;line-height:1.5}
+#msg{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);text-align:center;font-size:16px;max-width:86vw}
+#padL,#padR{position:fixed;bottom:max(18px,env(safe-area-inset-bottom));width:130px;height:130px;pointer-events:auto;opacity:.7;z-index:5}
+#padL{left:16px}#padR{right:16px}
+.ring{width:100%;height:100%;border:2px solid #7dff9a;border-radius:50%;position:relative}
+#stick{position:absolute;width:46px;height:46px;border-radius:50%;background:#7dff9a55;border:2px solid #7dff9a;left:42px;top:42px}
+#shotBtn{position:absolute;inset:16px;border-radius:50%;border:2px solid #7dff9a;background:#7dff9a33;color:#7dff9a;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+</style></head>
 <body>
 <canvas id="c"></canvas>
-<div id="hud">
-  <div id="title"><h1>bunbofy</h1><p>ダークインクの逆襲 v1</p></div>
-  <div id="stats"></div>
-  <div id="msg"></div>
-</div>
+<div id="hud"><div id="title"><h1>bunbofy</h1><p>ダークインクの逆襲 v2</p></div><div id="stats"></div><div id="msg"></div></div>
 <div id="padL"><div class="ring"><div id="stick"></div></div></div>
 <div id="padR"><div id="shotBtn">INK</div></div>
 <script>
-(() => {
-  const canvas = document.getElementById('c');
-  const ctx = canvas.getContext('2d');
-  const statsEl = document.getElementById('stats');
-  const msgEl = document.getElementById('msg');
-  const stickEl = document.getElementById('stick');
-  const padL = document.getElementById('padL');
-  const shotBtn = document.getElementById('shotBtn');
-  let W = 0, H = 0;
-  function resize() {
-    const dpr = Math.min(2.5, window.devicePixelRatio || 1);
-    W = canvas.width = Math.floor(innerWidth * dpr);
-    H = canvas.height = Math.floor(innerHeight * dpr);
-    canvas.style.width = innerWidth + 'px';
-    canvas.style.height = innerHeight + 'px';
-  }
-  resize();
-  addEventListener('resize', resize);
-  addEventListener('orientationchange', () => setTimeout(resize, 200));
-  const G = '#7dff9a';
-  const state = { mode: 'title', t: 0, score: 0, wave: 1, player: { x: 0, y: 80, vx: 0, vy: 0, r: 22, hp: 100, face: 1, shootCd: 0 }, bullets: [], enemies: [], splats: [], particles: [], input: { x: 0, y: 0, shoot: false } };
-  function reset() {
-    state.score = 0; state.wave = 1;
-    state.player = { x: 0, y: 80, vx: 0, vy: 0, r: 22, hp: 100, face: 1, shootCd: 0 };
-    state.bullets = []; state.enemies = []; state.splats = []; state.particles = [];
-    spawnWave(1);
-  }
-  function spawnWave(n) {
-    const count = 3 + n * 2;
-    for (let i = 0; i < count; i++) {
-      const ang = Math.random() * Math.PI * 2;
-      const dist = 220 + Math.random() * 180;
-      const type = Math.random() < 0.25 && n > 1 ? 'ruler' : (Math.random() < 0.5 ? 'eraser' : 'clip');
-      state.enemies.push({ type, x: Math.cos(ang) * dist, y: Math.sin(ang) * dist * 0.7, hp: type === 'ruler' ? 40 + n * 8 : 12 + n * 3, max: type === 'ruler' ? 40 + n * 8 : 12 + n * 3, r: type === 'ruler' ? 28 : 16, t: Math.random() * 10 });
-    }
-  }
-  const keys = {};
-  addEventListener('keydown', e => { keys[e.key] = true; if (e.key === ' ' || e.key === 'z') state.input.shoot = true; });
-  addEventListener('keyup', e => { keys[e.key] = false; if (e.key === ' ' || e.key === 'z') state.input.shoot = false; });
-  let joyId = null, joy0 = {x:0,y:0};
-  padL.addEventListener('pointerdown', e => { joyId = e.pointerId; const r = padL.getBoundingClientRect(); joy0 = { x: r.left + r.width/2, y: r.top + r.height/2 }; moveJoy(e); });
-  addEventListener('pointermove', e => { if (e.pointerId === joyId) moveJoy(e); });
-  addEventListener('pointerup', e => { if (e.pointerId === joyId) { joyId = null; state.input.x = state.input.y = 0; stickEl.style.left = '37px'; stickEl.style.top = '37px'; } });
-  function moveJoy(e) {
-    let dx = e.clientX - joy0.x, dy = e.clientY - joy0.y;
-    const len = Math.hypot(dx, dy) || 1; const s = Math.min(1, len / 40);
-    dx = dx / len * s; dy = dy / len * s;
-    state.input.x = dx; state.input.y = dy;
-    stickEl.style.left = (37 + dx * 34) + 'px'; stickEl.style.top = (37 + dy * 34) + 'px';
-  }
-  shotBtn.addEventListener('pointerdown', e => { e.preventDefault(); state.input.shoot = true; });
-  shotBtn.addEventListener('pointerup', () => state.input.shoot = false);
-  shotBtn.addEventListener('pointercancel', () => state.input.shoot = false);
-  function startIfNeeded() { if (state.mode !== 'play') { reset(); state.mode = 'play'; msgEl.innerHTML = ''; } }
-  canvas.addEventListener('pointerdown', startIfNeeded);
-  document.getElementById('hud').addEventListener('pointerdown', startIfNeeded);
-  function shoot() {
-    const p = state.player; if (p.shootCd > 0) return; p.shootCd = 0.22;
-    const dirx = state.input.x, diry = state.input.y;
-    let ang = Math.hypot(dirx, diry) > 0.2 ? Math.atan2(diry, dirx) : (p.face > 0 ? 0 : Math.PI);
-    state.bullets.push({ x: p.x + Math.cos(ang) * 28, y: p.y + Math.sin(ang) * 28, vx: Math.cos(ang) * 420, vy: Math.sin(ang) * 420, life: 0.9 });
-    burst(p.x + Math.cos(ang)*20, p.y + Math.sin(ang)*20, 6, 80);
-  }
-  function burst(x, y, n, spd) { for (let i = 0; i < n; i++) { const a = Math.random() * Math.PI * 2; const s = spd * (0.3 + Math.random()); state.particles.push({ x, y, vx: Math.cos(a)*s, vy: Math.sin(a)*s, life: 0.4 + Math.random()*0.4 }); } }
-  function splat(x, y, s) { state.splats.push({ x, y, s, life: 4 }); }
-  function worldToScreen(x, y) { const scale = Math.min(W, H) / 520; return { x: W/2 + x * scale, y: H*0.52 + y * scale, scale }; }
-  function glowStroke(w) { ctx.lineWidth = w; ctx.strokeStyle = G; ctx.shadowColor = '#1cff6a'; ctx.shadowBlur = 12; }
-  function drawInkBottle(x, y, sc, face, happy) {
-    ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc); glowStroke(2);
-    ctx.beginPath(); ctx.roundRect(-16, -6, 32, 28, 4); ctx.stroke();
-    ctx.beginPath(); ctx.rect(-10, -16, 20, 12); ctx.stroke();
-    ctx.beginPath(); ctx.ellipse(0, 4, 10, 8, 0, 0, Math.PI*2); ctx.stroke();
-    ctx.beginPath(); ctx.arc(-6, 2, 2.2, 0, Math.PI*2); ctx.arc(6, 2, 2.2, 0, Math.PI*2); ctx.fillStyle = G; ctx.fill();
-    ctx.beginPath(); if (happy) ctx.arc(0, 8, 5, 0.15, Math.PI-0.15); else ctx.arc(0, 10, 4, Math.PI+0.2, -0.2); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(-8, 22); ctx.lineTo(-10, 30); ctx.moveTo(8, 22); ctx.lineTo(10, 30); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(16 * face, 6); ctx.lineTo(26 * face, 2); ctx.stroke(); ctx.restore();
-  }
-  function drawEnemy(e, x, y, sc) {
-    ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc); glowStroke(1.8);
-    if (e.type === 'ruler') {
-      ctx.beginPath(); ctx.rect(-36, -10, 72, 20); ctx.stroke();
-      for (let i = -30; i <= 30; i += 8) { ctx.beginPath(); ctx.moveTo(i, -10); ctx.lineTo(i, i % 16 === 0 ? 2 : -2); ctx.stroke(); }
-      ctx.beginPath(); ctx.moveTo(-8, -16); ctx.lineTo(-4, -8); ctx.moveTo(8, -16); ctx.lineTo(4, -8); ctx.stroke();
-      ctx.fillStyle = G; ctx.beginPath(); ctx.arc(-8,-18,2.5,0,7); ctx.arc(8,-18,2.5,0,7); ctx.fill();
-      ctx.beginPath(); ctx.moveTo(-6,-2); ctx.lineTo(0,4); ctx.lineTo(6,-2); ctx.stroke();
-    } else if (e.type === 'eraser') {
-      ctx.beginPath(); ctx.roundRect(-14, -12, 28, 24, 3); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(-14, -2); ctx.lineTo(14, -2); ctx.stroke();
-      ctx.fillStyle = G; ctx.beginPath(); ctx.arc(-6,-6,2,0,7); ctx.arc(6,-6,2,0,7); ctx.fill();
-      ctx.beginPath(); ctx.arc(0,6,5,0.2,Math.PI-0.2); ctx.stroke();
-    } else {
-      ctx.beginPath(); ctx.ellipse(0, 0, 12, 8, 0.4, 0, Math.PI*2); ctx.stroke();
-      ctx.beginPath(); ctx.arc(-10, -2, 4, 0, Math.PI*2); ctx.stroke();
-      ctx.fillStyle = G; ctx.beginPath(); ctx.arc(-3,-2,1.8,0,7); ctx.arc(5,-1,1.8,0,7); ctx.fill();
-    }
-    const w = e.type === 'ruler' ? 50 : 28;
-    ctx.shadowBlur = 0; ctx.strokeStyle = '#245'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(-w/2, -28); ctx.lineTo(w/2, -28); ctx.stroke();
-    ctx.strokeStyle = G; ctx.beginPath(); ctx.moveTo(-w/2, -28); ctx.lineTo(-w/2 + w * (e.hp/e.max), -28); ctx.stroke();
-    ctx.restore();
-  }
-  function drawGrid() {
-    const { scale } = worldToScreen(0,0);
-    ctx.save(); ctx.translate(W/2, H*0.52); ctx.strokeStyle = '#0a3a1a'; ctx.lineWidth = 1; ctx.shadowBlur = 0;
-    const step = 40 * scale, n = 18;
-    for (let i = -n; i <= n; i++) { ctx.beginPath(); ctx.moveTo(-n*step, i*step); ctx.lineTo(n*step, i*step); ctx.moveTo(i*step, -n*step); ctx.lineTo(i*step, n*step); ctx.stroke(); }
-    ctx.restore();
-  }
-  let last = performance.now();
-  function loop(now) { const dt = Math.min(0.033, (now - last) / 1000); last = now; state.t += dt; update(dt); render(); requestAnimationFrame(loop); }
-  function update(dt) {
-    if (state.mode !== 'play') return;
-    const p = state.player;
-    let ix = state.input.x, iy = state.input.y;
-    if (keys['ArrowLeft'] || keys['a']) ix -= 1;
-    if (keys['ArrowRight'] || keys['d']) ix += 1;
-    if (keys['ArrowUp'] || keys['w']) iy -= 1;
-    if (keys['ArrowDown'] || keys['s']) iy += 1;
-    const il = Math.hypot(ix, iy); if (il > 1) { ix /= il; iy /= il; }
-    p.x += ix * 220 * dt; p.y += iy * 220 * dt;
-    p.x = Math.max(-260, Math.min(260, p.x)); p.y = Math.max(-180, Math.min(180, p.y));
-    if (Math.abs(ix) > 0.2) p.face = ix > 0 ? 1 : -1;
-    p.shootCd = Math.max(0, p.shootCd - dt);
-    if (state.input.shoot || keys[' '] || keys['z']) shoot();
-    for (const b of state.bullets) { b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt; }
-    state.bullets = state.bullets.filter(b => b.life > 0);
-    for (const e of state.enemies) {
-      const dx = p.x - e.x, dy = p.y - e.y, d = Math.hypot(dx, dy) || 1;
-      const spd = e.type === 'ruler' ? 55 : 80;
-      e.x += (dx / d) * spd * dt; e.y += (dy / d) * spd * dt;
-      if (d < e.r + p.r - 4) p.hp -= 18 * dt;
-      for (const b of state.bullets) {
-        if (Math.hypot(b.x - e.x, b.y - e.y) < e.r + 8) { e.hp -= 8; b.life = 0; splat(e.x, e.y, 10 + Math.random()*10); burst(e.x, e.y, 8, 140); state.score += 10; }
-      }
-    }
-    state.enemies = state.enemies.filter(e => { if (e.hp <= 0) { splat(e.x, e.y, 22); burst(e.x, e.y, 16, 200); state.score += e.type === 'ruler' ? 80 : 25; return false; } return true; });
-    for (const s of state.splats) s.life -= dt; state.splats = state.splats.filter(s => s.life > 0);
-    for (const q of state.particles) { q.x += q.vx * dt; q.y += q.vy * dt; q.life -= dt; q.vx *= 0.96; q.vy *= 0.96; }
-    state.particles = state.particles.filter(q => q.life > 0);
-    if (state.enemies.length === 0) { state.wave++; if (state.wave > 6) state.mode = 'win'; else spawnWave(state.wave); }
-    if (p.hp <= 0) { p.hp = 0; state.mode = 'over'; }
-  }
-  function render() {
-    ctx.fillStyle = '#02140a'; ctx.fillRect(0,0,W,H); drawGrid();
-    for (const s of state.splats) { const p = worldToScreen(s.x, s.y); ctx.save(); ctx.globalAlpha = Math.min(1, s.life); ctx.fillStyle = '#1cff6a55'; ctx.shadowColor = G; ctx.shadowBlur = 16; ctx.beginPath(); ctx.ellipse(p.x, p.y, s.s * p.scale * 0.08, s.s * p.scale * 0.05, 0, 0, 7); ctx.fill(); ctx.restore(); }
-    for (const b of state.bullets) { const p = worldToScreen(b.x, b.y); ctx.save(); glowStroke(2); ctx.beginPath(); ctx.arc(p.x, p.y, 5 * p.scale * 0.08, 0, 7); ctx.fillStyle = G; ctx.fill(); ctx.restore(); }
-    for (const q of state.particles) { const p = worldToScreen(q.x, q.y); ctx.globalAlpha = Math.max(0, q.life * 2); ctx.fillStyle = G; ctx.fillRect(p.x, p.y, 2, 2); ctx.globalAlpha = 1; }
-    const drawables = [...state.enemies.map(e => ({ y: e.y, draw: () => { const p = worldToScreen(e.x, e.y); drawEnemy(e, p.x, p.y, p.scale * 1.15); }})), { y: state.player.y, draw: () => { const p = worldToScreen(state.player.x, state.player.y); drawInkBottle(p.x, p.y, p.scale * 1.35, state.player.face, state.mode !== 'over'); }}];
-    drawables.sort((a,b) => a.y - b.y); drawables.forEach(d => d.draw());
-    statsEl.innerHTML = state.mode === 'play' ? `HP ${Math.ceil(state.player.hp)}<br>WAVE ${state.wave}/6<br>SCORE ${state.score}` : '';
-    if (state.mode === 'title') msgEl.innerHTML = '書斎を攻略せよ<br>左スティックで移動 / 右ボタンでインクショット<br><br>画面をタップして開始';
-    else if (state.mode === 'over') msgEl.innerHTML = `インクが尽きた…<br>SCORE ${state.score}<br><br>タップで再戦`;
-    else if (state.mode === 'win') msgEl.innerHTML = `ダークインク撃退！<br>SCORE ${state.score}<br><br>タップでもう一度`;
-    else msgEl.innerHTML = '';
-  }
-  requestAnimationFrame(loop);
+(()=>{
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d');
+const statsEl=document.getElementById('stats'),msgEl=document.getElementById('msg');
+const stickEl=document.getElementById('stick'),padL=document.getElementById('padL'),shotBtn=document.getElementById('shotBtn');
+let W=0,H=0;
+function resize(){const dpr=Math.min(2.5,devicePixelRatio||1);W=canvas.width=Math.floor(innerWidth*dpr);H=canvas.height=Math.floor(innerHeight*dpr);canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';}
+resize();addEventListener('resize',resize);
+const G='#7dff9a';
+const state={mode:'title',score:0,wave:1,player:{x:0,y:80,r:22,hp:100,face:1,shootCd:0},bullets:[],enemies:[],splats:[],particles:[],input:{x:0,y:0,shoot:false}};
+function reset(){state.score=0;state.wave=1;state.player={x:0,y:80,r:22,hp:100,face:1,shootCd:0};state.bullets=[];state.enemies=[];state.splats=[];state.particles=[];spawnWave(1);}
+function spawnWave(n){for(let i=0;i<3+n*2;i++){const a=Math.random()*Math.PI*2,d=220+Math.random()*180,type=Math.random()<0.25&&n>1?'ruler':(Math.random()<0.5?'eraser':'clip');
+state.enemies.push({type,x:Math.cos(a)*d,y:Math.sin(a)*d*0.7,hp:type==='ruler'?40+n*8:12+n*3,max:type==='ruler'?40+n*8:12+n*3,r:type==='ruler'?28:16});}}
+const keys={};
+addEventListener('keydown',e=>{keys[e.key]=true;if(e.key===' '||e.key==='z'||e.key==='Enter'){state.input.shoot=true;shoot(true);}});
+addEventListener('keyup',e=>{keys[e.key]=false;if(e.key===' '||e.key==='z'||e.key==='Enter')state.input.shoot=false;});
+let joyId=null,joy0={x:0,y:0};
+padL.addEventListener('pointerdown',e=>{e.preventDefault();joyId=e.pointerId;const r=padL.getBoundingClientRect();joy0={x:r.left+r.width/2,y:r.top+r.height/2};moveJoy(e);},{passive:false});
+addEventListener('pointermove',e=>{if(e.pointerId===joyId)moveJoy(e);});
+addEventListener('pointerup',e=>{if(e.pointerId===joyId){joyId=null;state.input.x=state.input.y=0;stickEl.style.left='42px';stickEl.style.top='42px';}});
+function moveJoy(e){let dx=e.clientX-joy0.x,dy=e.clientY-joy0.y;const len=Math.hypot(dx,dy)||1,s=Math.min(1,len/44);dx=dx/len*s;dy=dy/len*s;state.input.x=dx;state.input.y=dy;stickEl.style.left=(42+dx*36)+'px';stickEl.style.top=(42+dy*36)+'px';}
+function pressShoot(e){e&&e.preventDefault();e&&e.stopPropagation();state.input.shoot=true;if(state.mode!=='play'){reset();state.mode='play';msgEl.innerHTML='';}shoot(true);}
+function releaseShoot(e){e&&e.preventDefault();state.input.shoot=false;}
+['pointerdown','touchstart'].forEach(ev=>shotBtn.addEventListener(ev,pressShoot,{passive:false}));
+['pointerup','pointercancel','touchend','touchcancel'].forEach(ev=>shotBtn.addEventListener(ev,releaseShoot,{passive:false}));
+function startIfNeeded(){if(state.mode!=='play'){reset();state.mode='play';msgEl.innerHTML='';}}
+canvas.addEventListener('pointerdown',startIfNeeded);
+document.getElementById('hud').addEventListener('pointerdown',startIfNeeded);
+function shoot(force){
+  const p=state.player;if(state.mode!=='play')return;if(p.shootCd>0.04&&!force)return;if(force&&p.shootCd>0.08)return;p.shootCd=0.16;
+  const dirx=state.input.x,diry=state.input.y;let ang;
+  if(Math.hypot(dirx,diry)>0.2)ang=Math.atan2(diry,dirx);
+  else if(state.enemies.length){let best=state.enemies[0],bd=1e9;for(const e of state.enemies){const d=(e.x-p.x)**2+(e.y-p.y)**2;if(d<bd){bd=d;best=e;}}ang=Math.atan2(best.y-p.y,best.x-p.x);p.face=Math.cos(ang)>=0?1:-1;}
+  else ang=p.face>0?0:Math.PI;
+  state.bullets.push({x:p.x+Math.cos(ang)*28,y:p.y+Math.sin(ang)*28,vx:Math.cos(ang)*520,vy:Math.sin(ang)*520,life:1.2});
+  burst(p.x+Math.cos(ang)*20,p.y+Math.sin(ang)*20,8,90);
+}
+function burst(x,y,n,spd){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=spd*(.3+Math.random());state.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.4+Math.random()*.4});}}
+function splat(x,y,s){state.splats.push({x,y,s,life:4});}
+function w2s(x,y){const scale=Math.min(W,H)/520;return{x:W/2+x*scale,y:H*0.52+y*scale,scale};}
+function glow(w){ctx.lineWidth=w;ctx.strokeStyle=G;ctx.shadowColor='#1cff6a';ctx.shadowBlur=12;}
+function drawInk(x,y,sc,face,happy){ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);glow(2);ctx.beginPath();ctx.roundRect(-16,-6,32,28,4);ctx.stroke();ctx.beginPath();ctx.rect(-10,-16,20,12);ctx.stroke();ctx.beginPath();ctx.ellipse(0,4,10,8,0,0,7);ctx.stroke();ctx.fillStyle=G;ctx.beginPath();ctx.arc(-6,2,2.2,0,7);ctx.arc(6,2,2.2,0,7);ctx.fill();ctx.beginPath();if(happy)ctx.arc(0,8,5,.15,Math.PI-.15);else ctx.arc(0,10,4,Math.PI+.2,-.2);ctx.stroke();ctx.beginPath();ctx.moveTo(-8,22);ctx.lineTo(-10,30);ctx.moveTo(8,22);ctx.lineTo(10,30);ctx.stroke();ctx.beginPath();ctx.moveTo(16*face,6);ctx.lineTo(26*face,2);ctx.stroke();ctx.restore();}
+function drawEnemy(e,x,y,sc){ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);glow(1.8);
+if(e.type==='ruler'){ctx.beginPath();ctx.rect(-36,-10,72,20);ctx.stroke();for(let i=-30;i<=30;i+=8){ctx.beginPath();ctx.moveTo(i,-10);ctx.lineTo(i,i%16===0?2:-2);ctx.stroke();}ctx.fillStyle=G;ctx.beginPath();ctx.arc(-8,-18,2.5,0,7);ctx.arc(8,-18,2.5,0,7);ctx.fill();ctx.beginPath();ctx.moveTo(-6,-2);ctx.lineTo(0,4);ctx.lineTo(6,-2);ctx.stroke();}
+else if(e.type==='eraser'){ctx.beginPath();ctx.roundRect(-14,-12,28,24,3);ctx.stroke();ctx.fillStyle=G;ctx.beginPath();ctx.arc(-6,-6,2,0,7);ctx.arc(6,-6,2,0,7);ctx.fill();}
+else{ctx.beginPath();ctx.ellipse(0,0,12,8,.4,0,7);ctx.stroke();ctx.fillStyle=G;ctx.beginPath();ctx.arc(-3,-2,1.8,0,7);ctx.arc(5,-1,1.8,0,7);ctx.fill();}
+const w=e.type==='ruler'?50:28;ctx.shadowBlur=0;ctx.strokeStyle='#245';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-w/2,-28);ctx.lineTo(w/2,-28);ctx.stroke();ctx.strokeStyle=G;ctx.beginPath();ctx.moveTo(-w/2,-28);ctx.lineTo(-w/2+w*(e.hp/e.max),-28);ctx.stroke();ctx.restore();}
+function drawGrid(){const {scale}=w2s(0,0);ctx.save();ctx.translate(W/2,H*0.52);ctx.strokeStyle='#0a3a1a';ctx.lineWidth=1;ctx.shadowBlur=0;const step=40*scale,n=18;for(let i=-n;i<=n;i++){ctx.beginPath();ctx.moveTo(-n*step,i*step);ctx.lineTo(n*step,i*step);ctx.moveTo(i*step,-n*step);ctx.lineTo(i*step,n*step);ctx.stroke();}ctx.restore();}
+let last=performance.now();
+function loop(now){const dt=Math.min(0.033,(now-last)/1000);last=now;update(dt);render();requestAnimationFrame(loop);}
+function update(dt){if(state.mode!=='play')return;const p=state.player;let ix=state.input.x,iy=state.input.y;
+if(keys.ArrowLeft||keys.a)ix-=1;if(keys.ArrowRight||keys.d)ix+=1;if(keys.ArrowUp||keys.w)iy-=1;if(keys.ArrowDown||keys.s)iy+=1;
+const il=Math.hypot(ix,iy);if(il>1){ix/=il;iy/=il;}p.x+=ix*220*dt;p.y+=iy*220*dt;p.x=Math.max(-260,Math.min(260,p.x));p.y=Math.max(-180,Math.min(180,p.y));if(Math.abs(ix)>0.2)p.face=ix>0?1:-1;
+p.shootCd=Math.max(0,p.shootCd-dt);if(state.input.shoot||keys[' ']||keys.z)shoot(false);
+for(const b of state.bullets){b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;}state.bullets=state.bullets.filter(b=>b.life>0);
+for(const e of state.enemies){const dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy)||1;const spd=e.type==='ruler'?55:80;e.x+=(dx/d)*spd*dt;e.y+=(dy/d)*spd*dt;if(d<e.r+p.r-4)p.hp-=18*dt;
+for(const b of state.bullets){if(Math.hypot(b.x-e.x,b.y-e.y)<e.r+10){e.hp-=8;b.life=0;splat(e.x,e.y,12);burst(e.x,e.y,8,140);state.score+=10;}}}
+state.enemies=state.enemies.filter(e=>{if(e.hp<=0){splat(e.x,e.y,22);burst(e.x,e.y,16,200);state.score+=e.type==='ruler'?80:25;return false;}return true;});
+for(const s of state.splats)s.life-=dt;state.splats=state.splats.filter(s=>s.life>0);
+for(const q of state.particles){q.x+=q.vx*dt;q.y+=q.vy*dt;q.life-=dt;q.vx*=.96;q.vy*=.96;}state.particles=state.particles.filter(q=>q.life>0);
+if(!state.enemies.length){state.wave++;if(state.wave>6)state.mode='win';else spawnWave(state.wave);}if(p.hp<=0){p.hp=0;state.mode='over';}}
+function render(){ctx.fillStyle='#02140a';ctx.fillRect(0,0,W,H);drawGrid();
+for(const s of state.splats){const p=w2s(s.x,s.y);ctx.save();ctx.globalAlpha=Math.min(1,s.life);ctx.fillStyle='#1cff6a66';ctx.shadowColor=G;ctx.shadowBlur=16;ctx.beginPath();ctx.ellipse(p.x,p.y,s.s*p.scale*0.08,s.s*p.scale*0.05,0,0,7);ctx.fill();ctx.restore();}
+for(const b of state.bullets){const p=w2s(b.x,b.y);ctx.save();glow(3);ctx.fillStyle=G;ctx.beginPath();ctx.arc(p.x,p.y,Math.max(6,8*p.scale*0.12),0,7);ctx.fill();ctx.restore();}
+for(const q of state.particles){const p=w2s(q.x,q.y);ctx.globalAlpha=Math.max(0,q.life*2);ctx.fillStyle=G;ctx.fillRect(p.x,p.y,3,3);ctx.globalAlpha=1;}
+const ds=[...state.enemies.map(e=>({y:e.y,draw:()=>{const p=w2s(e.x,e.y);drawEnemy(e,p.x,p.y,p.scale*1.15);}})),{y:state.player.y,draw:()=>{const p=w2s(state.player.x,state.player.y);drawInk(p.x,p.y,p.scale*1.35,state.player.face,state.mode!=='over');}}];
+ds.sort((a,b)=>a.y-b.y);ds.forEach(d=>d.draw());
+statsEl.innerHTML=state.mode==='play'?`HP ${Math.ceil(state.player.hp)}<br>WAVE ${state.wave}/6<br>SCORE ${state.score}`:'';
+if(state.mode==='title')msgEl.innerHTML='書斎を攻略せよ<br>左で移動　右INKで発射<br><br>タップで開始';
+else if(state.mode==='over')msgEl.innerHTML=`インクが尽きた…<br>SCORE ${state.score}<br><br>タップで再戦`;
+else if(state.mode==='win')msgEl.innerHTML=`撃退！ SCORE ${state.score}<br><br>タップでもう一度`;
+else msgEl.innerHTML='';}
+requestAnimationFrame(loop);
 })();
-</script>
-</body>
-</html>
+</script></body></html>
