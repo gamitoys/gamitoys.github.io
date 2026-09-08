@@ -4,186 +4,145 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#d9dde3" />
+  <meta name="theme-color" content="#d4d8df" />
   <title>今日のあなたのゾンビ度診断</title>
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body {
-      margin: 0; padding: 0; min-height: 100%;
-      background: #d8dce3; color: #1c1c1e;
-      font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
-    }
-    .phone {
-      max-width: 430px; margin: 0 auto; min-height: 100dvh;
-      padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 24px);
-    }
-    .title-banner {
-      background: linear-gradient(#fff, #f2f2f6);
-      border: 3px solid #111; border-radius: 10px;
-      padding: 10px; text-align: center;
-      box-shadow: 0 3px 0 #111; margin-bottom: 14px;
-    }
-    .title-banner h1 { margin: 0; font-size: 21px; line-height: 1.25; }
+    html, body { margin: 0; padding: 0; min-height: 100%; background: #d5d9e0; color: #1a1a1a;
+      font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif; }
+    body { background-image: radial-gradient(rgba(255,255,255,.28) 1.2px, transparent 1.3px); background-size: 28px 28px; }
+    .phone { max-width: 430px; margin: 0 auto; min-height: 100dvh;
+      padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 28px); }
+    .banner { background: #fff; border: 3px solid #111; border-radius: 8px; padding: 10px 8px 12px; text-align: center;
+      box-shadow: 4px 4px 0 #111; margin-bottom: 16px; }
+    .banner h1 { margin: 0; font-size: 22px; line-height: 1.2; }
+    .banner h1 em { font-style: normal; color: #3c9a45; }
     .heart { color: #e23b4a; }
-    .sub { text-align: center; margin: 0 0 12px; }
-    .sub .lead { font-size: 18px; font-weight: 800; }
-    .sub .date { font-size: 12px; color: #666; margin-top: 2px; }
-    .card {
-      background: linear-gradient(#fff, #eef1f5);
-      border-radius: 22px; padding: 14px 14px 16px;
-      box-shadow: 0 8px 20px rgba(40,50,70,.12);
-    }
-    .row { display: flex; gap: 8px; align-items: center; }
-    .pct { font-size: 44px; font-weight: 800; color: #3cb54a; letter-spacing: -1px; line-height: 1; }
-    .bar { height: 12px; border-radius: 99px; background: #d5dbe3; overflow: hidden; margin: 8px 0; }
-    .bar > i {
-      display: block; height: 100%; width: 80%;
-      background: linear-gradient(90deg, #7be36a, #2f9d3a);
-      border-radius: 99px; transition: width .35s ease;
-    }
-    .face { font-size: 72px; line-height: 1; animation: idle 2.2s ease-in-out infinite; }
-    @keyframes idle {
-      0%,100% { transform: translateY(0) rotate(-2deg); }
-      50% { transform: translateY(-4px) rotate(2deg); }
-    }
-    .name { font-size: 13px; font-weight: 800; }
-    .advice { text-align: center; font-size: 14px; line-height: 1.65; margin: 12px 6px 14px; }
-    .sec { font-size: 12px; font-weight: 800; color: #666; margin: 16px 2px 8px; }
+    .block-title { text-align: center; font-weight: 900; font-size: 18px; margin: 0 0 4px; }
+    .block-sub { text-align: center; font-size: 12px; color: #555; margin: 0 0 14px; }
+    .status { display: grid; grid-template-columns: 1fr 1.1fr; gap: 10px; margin-bottom: 12px; }
+    .box { background: #fff; border: 2px solid #111; border-radius: 8px; padding: 10px 12px; }
+    .box .k { font-size: 12px; font-weight: 800; }
+    .pct { font-size: 40px; font-weight: 900; color: #2f9a3a; line-height: 1; letter-spacing: -1px; }
+    .bar { height: 10px; background: #e2e6ec; border-radius: 99px; overflow: hidden; margin-top: 6px; }
+    .bar i { display: block; height: 100%; background: linear-gradient(90deg,#8be46f,#2f9a3a); width: 65%; }
+    .st { display: flex; gap: 8px; align-items: center; }
+    .st .face { font-size: 34px; }
+    .st .nm { font-weight: 900; font-size: 15px; }
+    .hero { background: #fff; border: 2px solid #111; border-radius: 14px; padding: 12px; display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+    .hero .big { font-size: 84px; line-height: 1; }
+    .hero p { margin: 0; font-size: 13px; line-height: 1.6; font-weight: 700; }
+    .classes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .cls { background: #fff; border: 2px solid #111; border-radius: 12px; padding: 10px 8px 8px; text-align: center; }
+    .cls.on { outline: 3px solid #2f9a3a; }
+    .cls .rowf { display: flex; justify-content: center; gap: 4px; font-size: 28px; min-height: 36px; }
+    .cls .lab { font-size: 11px; font-weight: 900; margin-top: 6px; }
+    .sec { font-size: 11px; font-weight: 900; margin: 12px 0 8px; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .item {
-      border: 1.5px solid #d3d8e0; background: #fff;
-      border-radius: 16px; padding: 12px 10px 11px;
-      text-align: center; font-weight: 800; font-size: 15px; color: #222;
-    }
-    .item small { display: block; font-size: 11px; font-weight: 700; color: #888; margin-top: 2px; }
-    .item.on { background: #e9f9e4; border-color: #3cb54a; color: #1a6b24; }
-    .item.bad.on { background: #fdeeee; border-color: #d45454; color: #8a2020; }
-    .item .emo { font-size: 22px; display: block; margin-bottom: 2px; }
-    .reset {
-      width: 100%; margin-top: 12px; border: 1.5px solid #cfd4dc;
-      background: #fff; border-radius: 999px; padding: 12px;
-      font-weight: 800; font-size: 15px;
-    }
-    .shares { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
-    .shares button {
-      min-width: 52px; height: 40px; border: 0; border-radius: 10px;
-      color: #fff; font-weight: 800;
-    }
-    .s-share { background: #2f6bdc; }
-    .s-x { background: #111; }
-    .toast {
-      position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(16px);
-      background: #111; color: #fff; padding: 10px 14px; border-radius: 999px;
-      font-size: 13px; opacity: 0; transition: .2s; pointer-events: none;
-    }
+    .item { background: #fff; border: 2px solid #111; border-radius: 12px; padding: 11px 8px; text-align: center; font-weight: 900; font-size: 14px; }
+    .item.on { background: #e7f8df; }
+    .item.bad.on { background: #fde8e8; }
+    .item .emo { display: block; font-size: 20px; }
+    .sheet { background: #fff; border: 2px solid #111; border-radius: 12px; padding: 12px; margin-top: 14px; }
+    .sheet h2 { margin: 0 0 8px; font-size: 14px; text-align: center; }
+    .sheet .poses { display: flex; justify-content: space-around; font-size: 40px; }
+    .sheet .cap { display: flex; justify-content: space-around; font-size: 10px; font-weight: 800; color: #444; margin-top: 4px; }
+    .sheet .note { text-align: center; font-size: 11px; font-weight: 800; margin: 8px 0 0; }
+    .reset, .shareb { width: 100%; margin-top: 10px; border: 2px solid #111; border-radius: 10px; padding: 12px; font-weight: 900; background: #4d5d66; color: #fff; font-size: 15px; }
+    .shareb { background: #fff; color: #111; }
+    .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(12px); background: #111; color: #fff; padding: 10px 14px; border-radius: 999px; font-size: 13px; opacity: 0; transition: .2s; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
   <div class="phone">
-    <div class="title-banner">
-      <h1>今日のあなたの <span class="heart">❤</span><br>ゾンビ度診断アプリ</h1>
+    <div class="banner"><h1>今日のあなたの <span class="heart">❤</span><br><em>ゾンビ度診断アプリ</em></h1></div>
+    <div class="block-title">【今日のゾンビ度診断】</div>
+    <p class="block-sub" id="todayLabel">ボタンを押すと、その場でクラスが変わります</p>
+    <div class="status">
+      <div class="box"><div class="k">ゾンビ度：</div><div class="pct" id="pct">80%</div><div class="bar"><i id="bar"></i></div></div>
+      <div class="box"><div class="k">今日のステータス：</div><div class="st"><div class="face" id="face">🧟</div><div class="nm" id="rankName">ヤッフルゾンビ</div></div></div>
     </div>
-    <div class="sub">
-      <div class="lead">きょうのゾンビ度</div>
-      <div class="date" id="todayLabel"></div>
+    <div class="hero"><div class="big" id="heroFace">🧟</div><p id="advice">意識はあるが、動きが鈍く「アーン」と口から漏れやすい状態。早めの糖分補給を。</p></div>
+    <div class="classes">
+      <div class="cls" id="clsHuman"><div class="rowf">🧢🔦</div><div class="lab">生存者クラス (〜44%)</div></div>
+      <div class="cls on" id="clsZombie"><div class="rowf">🧟🧟</div><div class="lab">ゾンビクラス (45%+)</div></div>
     </div>
-    <div class="card">
-      <div class="row">
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:700">ゾンビ度：</div>
-          <div class="pct" id="pct">80%</div>
-          <div class="bar"><i id="bar"></i></div>
-          <div class="name" id="rankName">朝ゾンビ見習い</div>
-        </div>
-        <div class="face" id="face">🧟</div>
-      </div>
+    <div class="sec">回復アクション</div><div class="grid" id="good"></div>
+    <div class="sec">ゾンビアクション</div><div class="grid" id="bad"></div>
+    <div class="sheet">
+      <h2>【詳細コンプリート】</h2>
+      <div class="poses"><span>🏃</span><span>🧟</span></div>
+      <div class="cap"><span>走るゾンビ</span><span>シャッフルゾンビ</span></div>
+      <p class="note" id="sheetNote">これらの特徴から今日のタイプを判定</p>
     </div>
-    <p class="advice" id="advice">押した分だけ人間に戻ります。何も押さないと朝ゾンビのままです。</p>
-    <div class="sec">回復（押すとゾンビ度が下がる）</div>
-    <div class="grid" id="good"></div>
-    <div class="sec">まだゾンビ（押すと上がる）</div>
-    <div class="grid" id="bad"></div>
-    <button class="reset" onclick="resetToday()">今日をリセット</button>
-    <div class="shares">
-      <button class="s-share" onclick="share()">シェア</button>
-      <button class="s-x" onclick="share()">X</button>
-    </div>
+    <button class="reset" onclick="resetToday()">診断を終了して閉じる</button>
+    <button class="shareb" onclick="share()">Share</button>
   </div>
   <div class="toast" id="toast"></div>
 <script>
 const BASE = 80;
 const GOOD = [
-  { id: "water", emo: "💧", label: "水飲んだ", hint: "−12", d: -12 },
-  { id: "walk", emo: "🚶", label: "歩いた", hint: "−14", d: -14 },
-  { id: "sun", emo: "☀️", label: "日光浴びた", hint: "−10", d: -10 },
-  { id: "nap", emo: "😴", label: "仮眠した", hint: "−16", d: -16 },
-  { id: "eat", emo: "🍚", label: "ごはん食べた", hint: "−10", d: -10 },
-  { id: "talk", emo: "💬", label: "人と話した", hint: "−8", d: -8 }
+  { id:"water", emo:"💧", label:"水飲んだ", d:-12 },
+  { id:"walk", emo:"🚶", label:"歩いた", d:-14 },
+  { id:"sun", emo:"☀️", label:"日光浴びた", d:-10 },
+  { id:"sugar", emo:"🍬", label:"糖分とった", d:-12 },
+  { id:"nap", emo:"😴", label:"仮眠した", d:-16 },
+  { id:"talk", emo:"💬", label:"人と話した", d:-8 }
 ];
 const BAD = [
-  { id: "snooze", emo: "⏰", label: "スヌーズした", hint: "+10", d: 10 },
-  { id: "phone", emo: "📱", label: "画面見すぎ", hint: "+8", d: 8 },
-  { id: "skip", emo: "😶‍🌫️", label: "予定逃げた", hint: "+9", d: 9 },
-  { id: "groan", emo: "😩", label: "うめき声だけ", hint: "+11", d: 11 }
+  { id:"snooze", emo:"⏰", label:"スヌーズした", d:10 },
+  { id:"phone", emo:"📱", label:"画面見すぎ", d:8 },
+  { id:"shuffle", emo:"🦶", label:"足を引きずった", d:9 },
+  { id:"groan", emo:"😩", label:"アーンと出た", d:11 }
 ];
 const RANKS = [
-  { min: 0,  name: "ほぼ人間", face: "🙂", advice: "足取りは軽い。このまま水と歩行を忘れずに。" },
-  { min: 25, name: "回復中ヒューマン", face: "😌", advice: "意識は戻ってきた。もう一杯水を飲むと安定します。" },
-  { min: 45, name: "ヤッフルゾンビ", face: "🧟", advice: "意識はあるが足取りが重い。水と15分の仮眠が有効です。" },
-  { min: 65, name: "朝ゾンビ見習い", face: "😵", advice: "まだ体が起きていません。まず水、次に2分歩く。" },
-  { min: 85, name: "完全歩行死体", face: "🧟‍♂️", advice: "予定より生存。水を飲んで、短く横になってください。" }
+  { min:0, name:"生存者", face:"🙂", cls:"human", advice:"意識も足取りも人間側。このまま水と光を忘れずに。", pose:"走れる生存者" },
+  { min:25, name:"半覚醒生存者", face:"😌", cls:"human", advice:"まだ目が細い。糖分と2分の歩行でクラスを維持。", pose:"走れる / やや鈍い" },
+  { min:45, name:"ヤッフルゾンビ", face:"🧟", cls:"zombie", advice:"意識はあるが、動きが鈍く「アーン」と口から漏れやすい状態。早めの糖分補給を。", pose:"シャッフルゾンビ" },
+  { min:70, name:"走るゾンビ", face:"🧟‍♂️", cls:"zombie", advice:"足は動くが方向が怪しい。水を飲んで速度を落とす。", pose:"Runner Zombie" },
+  { min:88, name:"スタンディングゾンビ", face:"😵", cls:"zombie", advice:"その場シャッフル。予定より生存。横になってリセット。", pose:"Standing / Shuffle" }
 ];
-const key = "zombieTap-" + new Date().toDateString();
-let on = load();
-function load(){ try { return JSON.parse(localStorage.getItem(key)) || {}; } catch(e){ return {}; } }
+const key = "zombieTaste-" + new Date().toDateString();
+let on = {};
+try { on = JSON.parse(localStorage.getItem(key)) || {}; } catch(e){}
 function save(){ try { localStorage.setItem(key, JSON.stringify(on)); } catch(e){} }
-function rankFor(p){ let r = RANKS[0]; RANKS.forEach(x => { if (p >= x.min) r = x; }); return r; }
-function score(){
-  let p = BASE;
-  GOOD.concat(BAD).forEach(it => { if (on[it.id]) p += it.d; });
-  return Math.max(3, Math.min(99, p));
-}
-function toast(m){
-  const t = document.getElementById("toast");
-  t.textContent = m; t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 1400);
-}
-function renderButtons(el, list, bad){
+function rankFor(p){ let r = RANKS[0]; RANKS.forEach(x => { if(p>=x.min) r=x; }); return r; }
+function score(){ let p = BASE; GOOD.concat(BAD).forEach(it => { if(on[it.id]) p += it.d; }); return Math.max(3, Math.min(99, p)); }
+function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1400); }
+function btns(el, list, bad){
   el.innerHTML = list.map(it =>
-    '<button class="item ' + (bad ? "bad " : "") + (on[it.id] ? "on" : "") + '" onclick="toggle(\'' + it.id + '\')">' +
-    '<span class="emo">' + it.emo + "</span>" + it.label + "<small>" + it.hint + "</small></button>"
+    '<button class="item '+(bad?"bad ":"")+(on[it.id]?"on":"")+'" onclick="toggle(\''+it.id+'\')"><span class="emo">'+it.emo+"</span>"+it.label+"</button>"
   ).join("");
 }
 function render(){
-  const p = score();
-  const r = rankFor(p);
-  document.getElementById("pct").textContent = p + "%";
-  document.getElementById("bar").style.width = p + "%";
-  document.getElementById("rankName").textContent = "今日のある" + r.name;
+  const p = score(), r = rankFor(p);
+  document.getElementById("pct").textContent = p+"%";
+  document.getElementById("bar").style.width = p+"%";
+  document.getElementById("rankName").textContent = r.name;
   document.getElementById("face").textContent = r.face;
+  document.getElementById("heroFace").textContent = r.face;
   document.getElementById("advice").textContent = r.advice;
-  renderButtons(document.getElementById("good"), GOOD, false);
-  renderButtons(document.getElementById("bad"), BAD, true);
+  document.getElementById("clsHuman").classList.toggle("on", r.cls==="human");
+  document.getElementById("clsZombie").classList.toggle("on", r.cls==="zombie");
+  document.getElementById("sheetNote").textContent = "今日のタイプ：" + r.pose;
+  btns(document.getElementById("good"), GOOD, false);
+  btns(document.getElementById("bad"), BAD, true);
 }
 function toggle(id){
-  on[id] = !on[id];
-  save();
-  render();
-  const it = GOOD.concat(BAD).find(x => x.id === id);
-  toast((on[id] ? "記録：" : "取消：") + it.label);
+  on[id] = !on[id]; save(); render();
+  const it = GOOD.concat(BAD).find(x=>x.id===id);
+  toast((on[id]?"記録：":"取消：")+it.label);
 }
-function resetToday(){ on = {}; save(); render(); toast("今日をリセットした"); }
+function resetToday(){ on={}; save(); render(); toast("今日をリセット"); }
 async function share(){
-  const p = score();
-  const r = rankFor(p);
-  const did = GOOD.concat(BAD).filter(x => on[x.id]).map(x => x.label).join(" / ") || "まだ何も押していない";
-  const text = "今日のゾンビ度 " + p + "%（" + r.name + "）\n" + did;
-  if (navigator.share) { try { await navigator.share({ title: "ゾンビ度診断", text: text }); return; } catch(e){} }
-  if (navigator.clipboard) navigator.clipboard.writeText(text).then(function(){ toast("コピーした"); });
+  const p=score(), r=rankFor(p);
+  const did = GOOD.concat(BAD).filter(x=>on[x.id]).map(x=>x.label).join(" / ") || "未記録";
+  const text = "今日のゾンビ度 "+p+"%（"+r.name+"）\n"+r.advice+"\n"+did;
+  if(navigator.share){ try{ await navigator.share({title:"ゾンビ度診断", text}); return;}catch(e){} }
+  if(navigator.clipboard) navigator.clipboard.writeText(text).then(()=>toast("コピーした"));
 }
-document.getElementById("todayLabel").textContent = "本日（" + (new Date().getMonth()+1) + "月" + new Date().getDate() + "日）のコンディション";
+document.getElementById("todayLabel").textContent = "本日（"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日）ボタンでクラス判定";
 render();
 </script>
 </body>
