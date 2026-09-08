@@ -26,24 +26,33 @@ html,body{margin:0;padding:0;min-height:100%;background:#d5d9e0;color:#1a1a1a;fo
 .sec{font-size:11px;font-weight:900;margin:8px 0 6px}
 .reset,.go{width:100%;margin-top:8px;border:2px solid #111;border-radius:10px;padding:12px;font-weight:900;background:#4d5d66;color:#fff}
 .go{background:#fff;color:#111}
-.stage{background:#fff;border:3px solid #111;border-radius:16px;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;user-select:none}
-.stage .z{font-size:96px;transition:transform .08s}.stage .z.hop{transform:translateY(-14px) rotate(-8deg)}
+.stage{background:#fff;border:3px solid #111;border-radius:16px;min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;user-select:none}
+.stage .z{font-size:88px;transition:transform .08s}.stage .z.hop{transform:translateY(-14px) rotate(-8deg)}
 .hud{display:flex;justify-content:space-between;font-weight:900;margin:8px 0}
-.result{text-align:center;font-weight:900;margin-top:10px;min-height:40px}
-.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.result{text-align:center;font-weight:900;margin-top:10px}
+.roles{background:#2b2b2f;border-radius:14px;padding:12px;color:#eee}
+.roles h2{margin:0 0 10px;text-align:center;font-size:15px}
+.rcard{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rc{background:#efeee9;color:#111;border-radius:10px;padding:8px 6px 10px;text-align:center;opacity:.42;border:2px solid #111}
+.rc.got{opacity:1;outline:3px solid #7dcf6a}
+.rc.now{outline:3px solid #e2b23a}
+.rc .alive{display:inline-block;background:#1d3d24;color:#b6f0b0;font-size:9px;font-weight:900;border-radius:99px;padding:2px 6px}
+.rc .nm{font-weight:900;font-size:14px;margin:4px 0 0}
+.rc .en{font-size:9px;letter-spacing:.06em;color:#666}
+.rc .art{font-size:42px;line-height:1.1;margin:4px 0}
+.rc .sub{font-size:10px;font-weight:800}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px}
 .day{background:#fff;border:2px solid #111;border-radius:10px;padding:6px 2px;text-align:center;font-size:10px;font-weight:900}
-.day.empty{opacity:.4}.types,.bag{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.type,.loot{border:2px solid #111;border-radius:10px;padding:8px;text-align:center;background:#fff;opacity:.35}
-.type.got,.loot.got{opacity:1;background:#f3fff0}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:999px;font-size:13px;opacity:0;transition:.2s}
-.toast.show{opacity:1}.streak{text-align:center;font-weight:900;font-size:13px}
+.bag{display:grid;grid-template-columns:1fr 1fr;gap:8px}.loot{border:2px solid #111;border-radius:10px;padding:8px;text-align:center;background:#fff;opacity:.35}.loot.got{opacity:1}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 14px;border-radius:999px;font-size:13px;opacity:0}.toast.show{opacity:1}
+.streak{text-align:center;font-weight:900;font-size:13px}
 </style></head><body>
 <div class="phone">
 <div class="banner"><h1>今日のあなたの <span class="heart">❤</span><br><em>ゾンビ度診断アプリ</em></h1></div>
 <div class="tabs">
 <button class="on" id="t1" onclick="showTab('today')">今日</button>
 <button id="t2" onclick="showTab('game')">ゲーム</button>
-<button id="t3" onclick="showTab('book')">図鑑</button>
+<button id="t3" onclick="showTab('book')">役職</button>
 <button id="t4" onclick="showTab('bag')">袋</button>
 </div>
 <section id="today">
@@ -51,7 +60,7 @@ html,body{margin:0;padding:0;min-height:100%;background:#d5d9e0;color:#1a1a1a;fo
 <div class="lucky" id="luckyLine"></div>
 <div class="status">
 <div class="box"><div class="k">ゾンビ度</div><div class="pct" id="pct">80%</div><div class="bar"><i id="bar"></i></div></div>
-<div class="box"><div class="k">ステータス</div><div id="rankName" style="font-weight:900">ヤッフルゾンビ</div><div id="face" style="font-size:28px">🧟</div></div>
+<div class="box"><div class="k">今日の役職</div><div id="rankName" style="font-weight:900">感染者</div><div id="face" style="font-size:28px">🧟</div></div>
 </div>
 <div class="mission"><div id="need"></div><div id="dropLine" style="margin-top:6px"></div></div>
 <div class="sec">回復</div><div class="grid" id="good"></div>
@@ -61,14 +70,17 @@ html,body{margin:0;padding:0;min-height:100%;background:#d5d9e0;color:#1a1a1a;fo
 <section id="game" class="hidden">
 <div class="block-title">【8秒シャッフル歩き】</div>
 <div class="hud"><span id="gTime">8.0</span><span id="gStep">0歩</span></div>
-<div class="stage" id="stage" ontouchstart="tapWalk(event)" onmousedown="tapWalk(event)">
-<div class="z" id="gz">🧟</div>
-<div style="font-weight:900;margin-top:8px" id="gHint">画面を連打して歩く</div>
-</div>
+<div class="stage" ontouchstart="tapWalk(event)" onmousedown="tapWalk(event)"><div class="z" id="gz">🧟</div><div style="font-weight:900;margin-top:8px">連打して歩く</div></div>
 <button class="go" id="gBtn" onclick="startGame()">スタート</button>
 <p class="result" id="gRes"></p>
 </section>
-<section id="book" class="hidden"><div class="block-title">【週間図鑑】</div><div class="week" id="week"></div><div class="types" id="types"></div></section>
+<section id="book" class="hidden">
+<div class="roles">
+<h2>🧟 役職確認 (ROLE CHECK)</h2>
+<div class="week" id="week"></div>
+<div class="rcard" id="roles"></div>
+</div>
+</section>
 <section id="bag" class="hidden"><div class="block-title">【拾ったもの】</div><div class="bag" id="loots"></div></section>
 </div>
 <div class="toast" id="toast"></div>
@@ -76,12 +88,19 @@ html,body{margin:0;padding:0;min-height:100%;background:#d5d9e0;color:#1a1a1a;fo
 const BASE=80;
 const GOOD=[{id:"water",emo:"💧",label:"水飲んだ",d:-12},{id:"walk",emo:"🚶",label:"歩いた",d:-14},{id:"sun",emo:"☀️",label:"日光浴びた",d:-10},{id:"sugar",emo:"🍬",label:"糖分とった",d:-12},{id:"nap",emo:"😴",label:"仮眠した",d:-16},{id:"talk",emo:"💬",label:"人と話した",d:-8}];
 const BAD=[{id:"snooze",emo:"⏰",label:"スヌーズ",d:10},{id:"phone",emo:"📱",label:"画面見すぎ",d:8},{id:"shuffle",emo:"🦶",label:"引きずり",d:9},{id:"groan",emo:"😩",label:"アーン",d:11}];
-const RANKS=[{id:"human",min:0,name:"生存者",face:"🙂",cls:"human"},{id:"half",min:25,name:"半覚醒生存者",face:"😌",cls:"human"},{id:"yaffle",min:45,name:"ヤッフルゾンビ",face:"🧟",cls:"zombie"},{id:"runner",min:70,name:"走るゾンビ",face:"🏃",cls:"zombie"},{id:"stand",min:88,name:"スタンディングゾンビ",face:"😵",cls:"zombie"}];
+const ROLES=[
+ {id:"villager",min:0,name:"村人",en:"VILLAGER",sub:"人間 HUMAN",face:"🙂"},
+ {id:"doctor",min:18,name:"医者",en:"DOCTOR",sub:"感染防御",face:"🩺"},
+ {id:"force",min:32,name:"特殊部隊",en:"SPECIAL FORCES",sub:"感染者やゾンビを攻撃",face:"🛡"},
+ {id:"medium",min:46,name:"能力者",en:"MEDIUM",sub:"死者の正体を暴く",face:"🔮"},
+ {id:"infected",min:60,name:"感染者",en:"INFECTED",sub:"毎夜感染を広げる",face:"🦠"},
+ {id:"zombie",min:78,name:"ゾンビ",en:"ZOMBIE",sub:"市民側に見える歩行者",face:"🧟"}
+];
 const LOOT=[{id:"brain",emo:"🧠",name:"ちょっと古い脳"},{id:"shoe",emo:"👟",name:"片方の靴"},{id:"toast",emo:"🍞",name:"冷めたトースト"},{id:"can",emo:"🥫",name:"謎の缶詰"},{id:"light",emo:"🔦",name:"生存者のライト"},{id:"tooth",emo:"🦷",name:"抜けた前歯"}];
 const LUCKY=[{emo:"💧",name:"常温の水",bonus:"water"},{emo:"🍞",name:"冷めたトースト",bonus:"sugar"},{emo:"🔦",name:"生存者のライト",bonus:"sun"},{emo:"👟",name:"片方の靴",bonus:"walk"},{emo:"🥫",name:"謎の缶詰",bonus:"nap"},{emo:"🧠",name:"ちょっと古い脳",bonus:"talk"}];
 function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 function todayKey(){return ymd(new Date())}
-function rankFor(p){let r=RANKS[0];RANKS.forEach(x=>{if(p>=x.min)r=x});return r}
+function rankFor(p){let r=ROLES[0];ROLES.forEach(x=>{if(p>=x.min)r=x});return r}
 function load(){try{return JSON.parse(localStorage.getItem("zombiePlay")||"{}")}catch(e){return {}}}
 function save(){try{localStorage.setItem("zombiePlay",JSON.stringify(state))}catch(e){}}
 function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h)}
@@ -92,22 +111,23 @@ if(!state.days[todayKey()])state.days[todayKey()]={on:{},p:BASE};
 let day=state.days[todayKey()];let on=day.on||{};
 const missionIds=(function(){const p=GOOD.map(x=>x.id);const h=hash(todayKey());return [p[h%6],p[(h+2)%6],p[(h+4)%6]].filter((v,i,a)=>a.indexOf(v)===i)})();
 function scoreOf(map){let p=BASE;GOOD.concat(BAD).forEach(it=>{if(map[it.id])p+=it.d});if(map[luckyToday().bonus])p-=8;if(day.gameBonus)p+=day.gameBonus;return Math.max(3,Math.min(99,p))}
-function persist(){const p=scoreOf(on),r=rankFor(p);state.days[todayKey()]={...day,on,p,name:r.name,face:r.face,id:r.id,cls:r.cls};day=state.days[todayKey()];save()}
+function persist(){const p=scoreOf(on),r=rankFor(p);state.days[todayKey()]={...day,on,p,name:r.name,face:r.face,id:r.id};day=state.days[todayKey()];save()}
 function streakCount(){let n=0,d=new Date();for(let i=0;i<21;i++){const rec=state.days[ymd(d)];if(rec&&rec.name)n++;else if(i>0)break;d.setDate(d.getDate()-1)}return n}
 function missionDone(){return missionIds.every(id=>on[id])}
-function maybeDrop(){if(day.drop||!missionDone())return;const item=LOOT[hash(todayKey()+"drop")%LOOT.length];day.drop=item.id;state.bag[item.id]=(state.bag[item.id]||0)+1;persist();toast("ドロップ！ "+item.emo+item.name)}
-function showTab(id){["today","game","book","bag"].forEach(s=>document.getElementById(s).classList.toggle("hidden",s!==id));["today","game","book","bag"].forEach((s,i)=>document.getElementById("t"+(i+1)).classList.toggle("on",s===id));if(id==="book")renderBook();if(id==="bag")renderBag();if(id==="game")renderGameHud()}
+function maybeDrop(){if(day.drop||!missionDone())return;const item=LOOT[hash(todayKey()+"drop")%LOOT.length];day.drop=item.id;state.bag[item.id]=(state.bag[item.id]||0)+1;persist();toast("ドロップ "+item.name)}
+function showTab(id){["today","game","book","bag"].forEach((s,i)=>{document.getElementById(s).classList.toggle("hidden",s!==id);document.getElementById("t"+(i+1)).classList.toggle("on",s===id)});if(id==="book")renderBook();if(id==="bag")renderBag();if(id==="game")renderGameHud()}
 function btns(el,list){const lk=luckyToday().bonus;el.innerHTML=list.map(it=>'<button class="item '+(on[it.id]?"on":"")+(it.id===lk?" luck":"")+'" onclick="toggle(\''+it.id+'\')"><span class="emo">'+it.emo+"</span>"+it.label+"</button>").join("")}
-function renderToday(){const p=scoreOf(on),r=rankFor(p);document.getElementById("pct").textContent=p+"%";document.getElementById("bar").style.width=p+"%";document.getElementById("rankName").textContent=r.name;document.getElementById("face").textContent=r.face;document.getElementById("streak").textContent="生存記録 "+streakCount()+"日";const lk=luckyToday();document.getElementById("luckyLine").textContent="ラッキー "+lk.emo+" "+lk.name+(on[lk.bonus]?" 発動中":"");const all=GOOD.concat(BAD);document.getElementById("need").innerHTML="ミッション "+missionIds.map(id=>{const it=all.find(x=>x.id===id);return (on[id]?"☑":"☐")+(it?it.label:"")}).join(" / ");const drop=LOOT.find(x=>x.id===day.drop);document.getElementById("dropLine").textContent=drop?("ドロップ "+drop.emo+" "+drop.name):"3つでドロップ";btns(document.getElementById("good"),GOOD);btns(document.getElementById("bad"),BAD);persist()}
-function last7(){const a=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);a.push({d,rec:state.days[ymd(d)],today:i===0})}return a}
-function renderBook(){const days=last7(),wd=["日","月","火","水","木","金","土"];document.getElementById("week").innerHTML=days.map(x=>'<div class="day'+(x.rec&&x.rec.name?"":" empty")+'">'+wd[x.d.getDay()]+"<br>"+(x.rec&&x.rec.face?x.rec.face:"·")+"<br>"+(x.rec&&x.rec.p?x.rec.p+"%":"-")+"</div>").join("");const got={};days.forEach(x=>{if(x.rec&&x.rec.id)got[x.rec.id]=1});document.getElementById("types").innerHTML=RANKS.map(r=>'<div class="type '+(got[r.id]?"got":"")+'"><div style="font-size:28px">'+r.face+"</div>"+r.name+"</div>").join("")}
-function renderBag(){document.getElementById("loots").innerHTML=LOOT.map(x=>'<div class="loot '+(state.bag[x.id]?"got":"")+'"><div style="font-size:28px">'+x.emo+"</div>"+x.name+"<br>"+(state.bag[x.id]?state.bag[x.id]+"個":"未入手")+"</div>").join("")}
-function toggle(id){on[id]=!on[id];if(on[id]&&missionDone())maybeDrop();renderToday();toast((on[id]?"記録":"取消"))}
+function renderToday(){const p=scoreOf(on),r=rankFor(p);document.getElementById("pct").textContent=p+"%";document.getElementById("bar").style.width=p+"%";document.getElementById("rankName").textContent=r.name;document.getElementById("face").textContent=r.face;document.getElementById("streak").textContent="生存記録 "+streakCount()+"日";const lk=luckyToday();document.getElementById("luckyLine").textContent="ラッキー "+lk.emo+" "+lk.name+(on[lk.bonus]?" 発動中":"");const all=GOOD.concat(BAD);document.getElementById("need").innerHTML="ミッション "+missionIds.map(id=>{const it=all.find(x=>x.id===id);return (on[id]?"☑":"☐")+(it?it.label:"")}).join(" / ");const drop=LOOT.find(x=>x.id===day.drop);document.getElementById("dropLine").textContent=drop?("ドロップ "+drop.emo+drop.name):"3つでドロップ";btns(document.getElementById("good"),GOOD);btns(document.getElementById("bad"),BAD);persist()}
+function last7(){const a=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);a.push({d,rec:state.days[ymd(d)]})}return a}
+function renderBook(){const days=last7(),wd=["日","月","火","水","木","金","土"];document.getElementById("week").innerHTML=days.map(x=>'<div class="day">'+wd[x.d.getDay()]+"<br>"+(x.rec&&x.rec.face?x.rec.face:"·")+"</div>").join("");const got={};days.forEach(x=>{if(x.rec&&x.rec.id)got[x.rec.id]=1});const now=rankFor(scoreOf(on)).id;
+ document.getElementById("roles").innerHTML=ROLES.map(r=>'<div class="rc '+(got[r.id]?"got":"")+(r.id===now?" now":"")+'"><span class="alive">生存 ALIVE</span><div class="nm">'+r.name+'</div><div class="en">'+r.en+'</div><div class="art">'+r.face+'</div><div class="sub">'+r.sub+"</div></div>").join("")}
+function renderBag(){document.getElementById("loots").innerHTML=LOOT.map(x=>'<div class="loot '+(state.bag[x.id]?"got":"")+'"><div style="font-size:28px">'+x.emo+"</div>"+x.name+"</div>").join("")}
+function toggle(id){on[id]=!on[id];if(on[id]&&missionDone())maybeDrop();renderToday();toast(on[id]?"記録":"取消")}
 function resetToday(){on={};day.drop=null;day.gameBonus=0;day.played=false;persist();renderToday();toast("リセット")}
 let playing=false,left=8,steps=0,timer=null;
-function renderGameHud(){document.getElementById("gRes").textContent=day.gameBest?("今日のベスト "+day.gameBest+"歩"):"何回でも遊べる。最初の1回だけゾンビ度に反映"}
-function startGame(){if(playing)return;playing=true;left=8;steps=0;document.getElementById("gStep").textContent="0歩";document.getElementById("gRes").textContent="";document.getElementById("gBtn").textContent="歩行中…";timer=setInterval(()=>{left-=0.1;if(left<=0){left=0;endGame()}document.getElementById("gTime").textContent=left.toFixed(1)},100)}
+function renderGameHud(){document.getElementById("gRes").textContent=day.gameBest?("ベスト "+day.gameBest+"歩"):"1日1回目だけ役職に反映"}
+function startGame(){if(playing)return;playing=true;left=8;steps=0;document.getElementById("gStep").textContent="0歩";document.getElementById("gBtn").textContent="歩行中";timer=setInterval(()=>{left-=0.1;if(left<=0)endGame();document.getElementById("gTime").textContent=Math.max(0,left).toFixed(1)},100)}
 function tapWalk(e){e.preventDefault();if(!playing)return;steps++;document.getElementById("gStep").textContent=steps+"歩";const z=document.getElementById("gz");z.classList.remove("hop");void z.offsetWidth;z.classList.add("hop")}
-function endGame(){playing=false;clearInterval(timer);document.getElementById("gTime").textContent="0.0";document.getElementById("gBtn").textContent="もう一度";let label="その場足踏み",bonus=4;if(steps>=16){label="人間歩き";bonus=-14;on.walk=true}else if(steps>=9){label="シャッフル歩き";bonus=-8;on.walk=true}else{on.shuffle=true}document.getElementById("gRes").textContent=steps+"歩 / "+label;if(!day.played){day.played=true;day.gameBonus=bonus;day.gameBest=steps;persist();renderToday();toast(label+" 反映した")}else{day.gameBest=Math.max(day.gameBest||0,steps);persist();toast(label+"（反映は1日1回）")}}
+function endGame(){playing=false;clearInterval(timer);document.getElementById("gBtn").textContent="もう一度";let label="足踏み",bonus=4;if(steps>=16){label="人間歩き";bonus=-14;on.walk=true}else if(steps>=9){label="シャッフル";bonus=-8;on.walk=true}else on.shuffle=true;document.getElementById("gRes").textContent=steps+"歩 / "+label;if(!day.played){day.played=true;day.gameBonus=bonus;day.gameBest=steps;persist();renderToday();toast(label)}else{day.gameBest=Math.max(day.gameBest||0,steps);persist();toast("反映済" )}}
 renderToday();
 </script></body></html>
