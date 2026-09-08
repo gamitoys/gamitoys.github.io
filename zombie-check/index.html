@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#d9dde3" />
+  <title>今日のあなたのゾンビ度診断</title>
+  <style>
+    :root {
+      --bg: #d8dce3;
+      --card: #f4f6f8;
+      --ink: #1c1c1e;
+      --muted: #5c5c66;
+      --green: #3cb54a;
+      --green-dark: #2a8f36;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif;
+    }
+    body {
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,.35) 0 18px, transparent 19px),
+        radial-gradient(circle at 88% 12%, rgba(255,255,255,.25) 0 14px, transparent 15px);
+      overflow-x: hidden;
+    }
+    .phone {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100dvh;
+      padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 20px);
+      position: relative;
+    }
+    .ghost-bg {
+      position: fixed; inset: 0; pointer-events: none; opacity: .18;
+      font-size: 28px; line-height: 64px; letter-spacing: 28px;
+      word-break: break-all; user-select: none;
+    }
+    .title-banner {
+      background: linear-gradient(#fff, #f2f2f6);
+      border: 3px solid #111;
+      border-radius: 10px;
+      padding: 10px 10px 12px;
+      text-align: center;
+      box-shadow: 0 3px 0 #111;
+      margin-bottom: 16px;
+    }
+    .title-banner h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: .04em;
+      line-height: 1.25;
+    }
+    .pixel-heart { color: #e23b4a; }
+    .sub { text-align: center; margin: 4px 0 18px; }
+    .sub .lead { font-size: 20px; font-weight: 800; }
+    .sub .date { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .card {
+      background: linear-gradient(#fff, #eef1f5);
+      border-radius: 22px;
+      padding: 16px 16px 18px;
+      box-shadow: 0 8px 20px rgba(40,50,70,.12), inset 0 1px 0 #fff;
+      border: 1px solid rgba(255,255,255,.8);
+    }
+    .row { display: flex; gap: 8px; align-items: center; }
+    .pct { font-size: 42px; font-weight: 800; color: var(--green); letter-spacing: -1px; line-height: 1; }
+    .bar { height: 12px; border-radius: 99px; background: #d5dbe3; overflow: hidden; margin: 8px 0 10px; }
+    .bar > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #7be36a, #2f9d3a); border-radius: 99px; transition: width .7s cubic-bezier(.2,.8,.2,1); }
+    .zombie { width: 118px; height: 140px; display: grid; place-items: center; flex-shrink: 0; }
+    .zombie .body { font-size: 78px; filter: drop-shadow(0 6px 0 rgba(0,0,0,.08)); animation: idle 2.2s ease-in-out infinite; transform-origin: 50% 90%; }
+    @keyframes idle {
+      0%,100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-4px) rotate(2deg); }
+    }
+    .label { font-size: 13px; color: #444; font-weight: 700; }
+    .advice { text-align: center; font-size: 14px; line-height: 1.7; margin: 16px 8px 18px; color: #222; }
+    .btn {
+      display: block; width: 100%; border: 0; cursor: pointer; font-weight: 800; font-size: 16px;
+      padding: 14px 16px; border-radius: 999px; color: #fff;
+      background: linear-gradient(90deg, #3ec6b0, #e25a6a);
+      box-shadow: 0 4px 0 rgba(0,0,0,.12);
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn.ghost { background: #fff; color: #222; border: 1.5px solid #cfd4dc; box-shadow: none; margin-top: 10px; }
+    .shares { display: flex; gap: 10px; justify-content: center; margin: 14px 0 12px; }
+    .shares button, .shares a {
+      width: 52px; height: 40px; border-radius: 10px; border: 0;
+      display: grid; place-items: center; font-weight: 800; color: #fff; text-decoration: none; font-size: 13px;
+    }
+    .s-share { background: #2f6bdc; }
+    .s-x { background: #111; }
+    .s-sf { background: #1da1f2; }
+    .s-link { background: #c44; }
+    .dots { text-align: center; letter-spacing: 6px; color: #9aa3ad; margin: 8px 0 0; font-size: 18px; }
+    .q-num { font-size: 13px; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+    .q-title { font-size: 20px; font-weight: 800; margin: 0 0 16px; line-height: 1.35; }
+    .choice {
+      width: 100%; text-align: left; background: #fff; border: 1.5px solid #d5dae2;
+      border-radius: 14px; padding: 14px 14px; font-size: 16px; font-weight: 700;
+      margin-bottom: 10px; color: #222;
+    }
+    .choice:active, .choice.picked { border-color: #2f9d3a; background: #eefbe9; }
+    .hidden { display: none; }
+    .mini { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .mini span { width: 36px; height: 36px; border-radius: 10px; background: #e8edf3; display: grid; place-items: center; font-size: 20px; }
+    .toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%) translateY(20px);
+      background: #111; color: #fff; padding: 10px 16px; border-radius: 999px;
+      font-size: 13px; opacity: 0; pointer-events: none; transition: .25s; z-index: 20; white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .widget-preview { margin-top: 14px; background: linear-gradient(180deg, #cfd6e0, #b7c0cc); border-radius: 22px; padding: 16px; color: #111; }
+    .lock { background: rgba(255,255,255,.55); backdrop-filter: blur(8px); border-radius: 20px; padding: 14px; text-align: center; }
+    .gauge {
+      width: 160px; height: 160px; margin: 8px auto 0; border-radius: 50%;
+      background: conic-gradient(#3cb54a var(--p), #e4e8ee 0);
+      display: grid; place-items: center;
+    }
+    .gauge inner { width: 118px; height: 118px; border-radius: 50%; background: rgba(255,255,255,.85); display: grid; place-items: center; font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="ghost-bg">👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟👻🧠🧟</div>
+  <div class="phone">
+    <section id="home">
+      <div class="title-banner">
+        <h1>今日のあなたの <span class="pixel-heart">❤</span><br>ゾンビ度診断アプリ</h1>
+      </div>
+      <div class="sub">
+        <div class="lead">きょうのゾンビ度 🧟</div>
+        <div class="date" id="todayLabel">本日のコンディション</div>
+      </div>
+      <div class="card">
+        <div class="row">
+          <div style="flex:1">
+            <div class="label">ゾンビ度：</div>
+            <div class="pct" id="homePct">--%</div>
+            <div class="bar"><i id="homeBar"></i></div>
+            <div class="label" id="homeName">まだ診断していません</div>
+          </div>
+          <div class="zombie"><div class="body" id="homeFace">🧟</div></div>
+        </div>
+      </div>
+      <p class="advice" id="homeAdvice">3つの質問で、今の足取りの重さを測ります。</p>
+      <button class="btn" onclick="startQuiz()">診断する</button>
+      <div class="shares">
+        <button class="s-share" onclick="share()">シェア</button>
+        <button class="s-x" onclick="share()">X</button>
+        <button class="s-sf" onclick="toast('Safariの共有シートを想定')">SF</button>
+        <button class="s-link" onclick="copyLink()">🔗</button>
+      </div>
+      <button class="btn ghost" onclick="showWidget()">ウィジェットに追加（見た目）</button>
+    </section>
+
+    <section id="quiz" class="hidden">
+      <div class="title-banner">
+        <h1>今のコンディションを<br>3つの質問でチェック！</h1>
+      </div>
+      <div class="card">
+        <div class="q-num" id="qNum">Q1 / 3</div>
+        <h2 class="q-title" id="qTitle"></h2>
+        <div id="qChoices"></div>
+      </div>
+    </section>
+
+    <section id="result" class="hidden">
+      <div class="title-banner">
+        <h1>今日のあなたの <span class="pixel-heart">❤</span><br>ゾンビ度診断アプリ</h1>
+      </div>
+      <div class="sub">
+        <div class="lead">きょうのゾンビ度 🧟</div>
+        <div class="date" id="resultDate"></div>
+      </div>
+      <div class="card">
+        <div class="row">
+          <div style="flex:1">
+            <div class="label">ゾンビ度：</div>
+            <div class="pct" id="resPct">0%</div>
+            <div class="bar"><i id="resBar"></i></div>
+            <div class="label">今日のある<br><span id="resName">ヤッフルゾンビ</span></div>
+            <div class="mini" id="resMinis"></div>
+          </div>
+          <div class="zombie"><div class="body" id="resFace">🧟</div></div>
+        </div>
+        <div class="dots">•••</div>
+      </div>
+      <p class="advice" id="resAdvice"></p>
+      <button class="btn" onclick="startQuiz()">もう一度診断する</button>
+      <div class="shares">
+        <button class="s-share" onclick="share()">シェア</button>
+        <button class="s-x" onclick="share()">X</button>
+        <button class="s-sf" onclick="toast('共有は実機Safariで')">SF</button>
+        <button class="s-link" onclick="copyLink()">🔗</button>
+      </div>
+      <button class="btn ghost" onclick="showWidget()">ウィジェットに追加</button>
+    </section>
+
+    <section id="widget" class="hidden">
+      <div class="title-banner"><h1>ウィジェット見た目</h1></div>
+      <div class="widget-preview">
+        <div style="opacity:.7;font-size:13px;text-align:center">今日のあなたのゾンビ度診断</div>
+        <div style="font-size:42px;font-weight:800;text-align:center;letter-spacing:-1px">10:38</div>
+        <div class="lock">
+          <div style="font-size:13px;font-weight:700">今日のゾンビ度</div>
+          <div class="gauge" id="gauge">
+            <inner>
+              <div style="font-size:36px">🧟</div>
+              <div id="wPct" style="font-size:22px">65%</div>
+            </inner>
+          </div>
+        </div>
+      </div>
+      <p class="advice">本物のロック画面ウィジェットはアプリ本体（WidgetKit）が必要です。今は見た目確認用です。</p>
+      <button class="btn" onclick="goHome()">戻る</button>
+    </section>
+  </div>
+  <div class="toast" id="toast"></div>
+<script>
+const QUESTIONS = [
+  {
+    title: "昨夜の睡眠はどれくらい？",
+    choices: [
+      { t: "7時間以上しっかり寝た", s: 8 },
+      { t: "5〜6時間でまあまあ", s: 22 },
+      { t: "4時間以下 / ほとんど寝てない", s: 38 }
+    ]
+  },
+  {
+    title: "今の頭の霧はどのくらい？",
+    choices: [
+      { t: "クリア。歩けるし考えられる", s: 6 },
+      { t: "意識はあるが足取りが重い", s: 24 },
+      { t: "うめき声しか出ない", s: 40 }
+    ]
+  },
+  {
+    title: "カフェインと仮眠、今日は？",
+    choices: [
+      { t: "もう補給した / 仮眠した", s: 5 },
+      { t: "まだ何もしていない", s: 20 },
+      { t: "エナドリ3本でも足りない", s: 32 }
+    ]
+  }
+];
+const RANKS = [
+  { min: 0,  name: "ほぼ人間", face: "🙂", advice: "足取りは軽いです。このまま日光と水を忘れずに。" },
+  { min: 35, name: "朝ゾンビ見習い", face: "😵", advice: "意識はあるが足取りが重い。カフェイン補給と15分の仮眠が有効です。" },
+  { min: 55, name: "ヤッフルゾンビ", face: "🧟", advice: "意識はあるが足取りが重い。カフェイン補給と15分の仮眠が有効です。" },
+  { min: 75, name: "完全歩行死体", face: "🧟‍♂️", advice: "脳より胃が先に動いています。まず水、次に15分目を閉じる。" },
+  { min: 90, name: "終末期ゾンビ", face: "☠️", advice: "今日は予定を減らして生存優先。温かいものと短い横になる時間を。" }
+];
+let step = 0, score = 0, last = null;
+function $(id){ return document.getElementById(id); }
+function jpDate(){
+  const d = new Date();
+  return `本日（${d.getMonth()+1}月${d.getDate()}日）のコンディション`;
+}
+$("todayLabel").textContent = jpDate();
+function show(id){
+  ["home","quiz","result","widget"].forEach(s => $(s).classList.toggle("hidden", s !== id));
+  window.scrollTo(0,0);
+}
+function startQuiz(){ step = 0; score = 0; show("quiz"); renderQ(); }
+function renderQ(){
+  const q = QUESTIONS[step];
+  $("qNum").textContent = `Q${step+1} / ${QUESTIONS.length}`;
+  $("qTitle").textContent = q.title;
+  $("qChoices").innerHTML = q.choices.map((c,i)=>
+    `<button class="choice" onclick="pick(${i})">${c.t}</button>`
+  ).join("");
+}
+function pick(i){
+  score += QUESTIONS[step].choices[i].s;
+  step++;
+  if(step < QUESTIONS.length) renderQ();
+  else finish();
+}
+function rankFor(p){
+  let r = RANKS[0];
+  RANKS.forEach(x => { if(p >= x.min) r = x; });
+  return r;
+}
+function finish(){
+  const p = Math.min(99, Math.max(8, score));
+  const r = rankFor(p);
+  last = { p, r };
+  $("resPct").textContent = p + "%";
+  $("resBar").style.width = p + "%";
+  $("resName").textContent = r.name;
+  $("resFace").textContent = r.face;
+  $("resAdvice").textContent = r.advice;
+  $("resultDate").textContent = jpDate();
+  $("resMinis").innerHTML = ["🤠","🧟","🧢","🙂"].map(x=>`<span>${x}</span>`).join("");
+  $("homePct").textContent = p + "%";
+  $("homeBar").style.width = p + "%";
+  $("homeName").textContent = "今日のある" + r.name;
+  $("homeFace").textContent = r.face;
+  $("homeAdvice").textContent = r.advice;
+  show("result");
+  try { localStorage.setItem("zombieToday", JSON.stringify({ day: new Date().toDateString(), p, name: r.name, face: r.face, advice: r.advice })); } catch(e){}
+}
+function goHome(){ show("home"); }
+function showWidget(){
+  const p = last ? last.p : 65;
+  $("wPct").textContent = p + "%";
+  $("gauge").style.setProperty("--p", p + "%");
+  show("widget");
+}
+function toast(msg){
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1800);
+}
+async function share(){
+  const p = last ? last.p : "--";
+  const name = last ? last.r.name : "未診断";
+  const text = `今日のゾンビ度は ${p}%（${name}）\n意識はあるが足取りが重い。`;
+  if (navigator.share) {
+    try { await navigator.share({ title: "ゾンビ度診断", text }); return; } catch(e){}
+  }
+  copyText(text);
+}
+function copyLink(){ copyText(location.href); }
+function copyText(text){
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(()=>toast("コピーしました")).catch(()=>toast(text));
+  else toast("コピーできませんでした");
+}
+(function restore(){
+  try {
+    const raw = localStorage.getItem("zombieToday");
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    if(d.day !== new Date().toDateString()) return;
+    last = { p:d.p, r:{ name:d.name, face:d.face, advice:d.advice } };
+    $("homePct").textContent = d.p + "%";
+    $("homeBar").style.width = d.p + "%";
+    $("homeName").textContent = "今日のある" + d.name;
+    $("homeFace").textContent = d.face;
+    $("homeAdvice").textContent = d.advice;
+  } catch(e){}
+})();
+</script>
+</body>
+</html>
