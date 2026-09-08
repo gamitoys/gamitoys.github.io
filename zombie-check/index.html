@@ -1,85 +1,108 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="#d4d8df" />
-  <title>今日のあなたのゾンビ度診断</title>
-  <style>
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html, body { margin: 0; padding: 0; min-height: 100%; background: #d5d9e0; color: #1a1a1a;
-      font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Yu Gothic", sans-serif; }
-    body { background-image: radial-gradient(rgba(255,255,255,.28) 1.2px, transparent 1.3px); background-size: 28px 28px; }
-    .phone { max-width: 430px; margin: 0 auto; min-height: 100dvh;
-      padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 28px); }
-    .banner { background: #fff; border: 3px solid #111; border-radius: 8px; padding: 10px 8px 12px; text-align: center;
-      box-shadow: 4px 4px 0 #111; margin-bottom: 16px; }
-    .banner h1 { margin: 0; font-size: 22px; line-height: 1.2; }
-    .banner h1 em { font-style: normal; color: #3c9a45; }
-    .heart { color: #e23b4a; }
-    .block-title { text-align: center; font-weight: 900; font-size: 18px; margin: 0 0 4px; }
-    .block-sub { text-align: center; font-size: 12px; color: #555; margin: 0 0 14px; }
-    .status { display: grid; grid-template-columns: 1fr 1.1fr; gap: 10px; margin-bottom: 12px; }
-    .box { background: #fff; border: 2px solid #111; border-radius: 8px; padding: 10px 12px; }
-    .box .k { font-size: 12px; font-weight: 800; }
-    .pct { font-size: 40px; font-weight: 900; color: #2f9a3a; line-height: 1; letter-spacing: -1px; }
-    .bar { height: 10px; background: #e2e6ec; border-radius: 99px; overflow: hidden; margin-top: 6px; }
-    .bar i { display: block; height: 100%; background: linear-gradient(90deg,#8be46f,#2f9a3a); width: 65%; }
-    .st { display: flex; gap: 8px; align-items: center; }
-    .st .face { font-size: 34px; }
-    .st .nm { font-weight: 900; font-size: 15px; }
-    .hero { background: #fff; border: 2px solid #111; border-radius: 14px; padding: 12px; display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
-    .hero .big { font-size: 84px; line-height: 1; }
-    .hero p { margin: 0; font-size: 13px; line-height: 1.6; font-weight: 700; }
-    .classes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-    .cls { background: #fff; border: 2px solid #111; border-radius: 12px; padding: 10px 8px 8px; text-align: center; }
-    .cls.on { outline: 3px solid #2f9a3a; }
-    .cls .rowf { display: flex; justify-content: center; gap: 4px; font-size: 28px; min-height: 36px; }
-    .cls .lab { font-size: 11px; font-weight: 900; margin-top: 6px; }
-    .sec { font-size: 11px; font-weight: 900; margin: 12px 0 8px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .item { background: #fff; border: 2px solid #111; border-radius: 12px; padding: 11px 8px; text-align: center; font-weight: 900; font-size: 14px; }
-    .item.on { background: #e7f8df; }
-    .item.bad.on { background: #fde8e8; }
-    .item .emo { display: block; font-size: 20px; }
-    .sheet { background: #fff; border: 2px solid #111; border-radius: 12px; padding: 12px; margin-top: 14px; }
-    .sheet h2 { margin: 0 0 8px; font-size: 14px; text-align: center; }
-    .sheet .poses { display: flex; justify-content: space-around; font-size: 40px; }
-    .sheet .cap { display: flex; justify-content: space-around; font-size: 10px; font-weight: 800; color: #444; margin-top: 4px; }
-    .sheet .note { text-align: center; font-size: 11px; font-weight: 800; margin: 8px 0 0; }
-    .reset, .shareb { width: 100%; margin-top: 10px; border: 2px solid #111; border-radius: 10px; padding: 12px; font-weight: 900; background: #4d5d66; color: #fff; font-size: 15px; }
-    .shareb { background: #fff; color: #111; }
-    .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(12px); background: #111; color: #fff; padding: 10px 14px; border-radius: 999px; font-size: 13px; opacity: 0; transition: .2s; pointer-events: none; }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#d4d8df" />
+<title>今日のあなたのゾンビ度診断</title>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin:0; padding:0; min-height:100%; background:#d5d9e0; color:#1a1a1a; font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic",sans-serif; }
+body { background-image: radial-gradient(rgba(255,255,255,.28) 1.2px, transparent 1.3px); background-size:28px 28px; }
+.phone { max-width:430px; margin:0 auto; min-height:100dvh; padding: calc(env(safe-area-inset-top) + 12px) 16px calc(env(safe-area-inset-bottom) + 28px); }
+.banner { background:#fff; border:3px solid #111; border-radius:8px; padding:10px 8px 12px; text-align:center; box-shadow:4px 4px 0 #111; margin-bottom:14px; }
+.banner h1 { margin:0; font-size:22px; line-height:1.2; }
+.banner h1 em { font-style:normal; color:#3c9a45; }
+.heart { color:#e23b4a; }
+.tabs { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+.tabs button { border:2px solid #111; background:#fff; border-radius:10px; padding:10px; font-weight:900; }
+.tabs button.on { background:#1f2a30; color:#fff; }
+.hidden { display:none; }
+.block-title { text-align:center; font-weight:900; font-size:18px; margin:0 0 4px; }
+.block-sub { text-align:center; font-size:12px; color:#555; margin:0 0 12px; }
+.status { display:grid; grid-template-columns:1fr 1.1fr; gap:10px; margin-bottom:12px; }
+.box { background:#fff; border:2px solid #111; border-radius:8px; padding:10px 12px; }
+.box .k { font-size:12px; font-weight:800; }
+.pct { font-size:40px; font-weight:900; color:#2f9a3a; line-height:1; letter-spacing:-1px; }
+.bar { height:10px; background:#e2e6ec; border-radius:99px; overflow:hidden; margin-top:6px; }
+.bar i { display:block; height:100%; background:linear-gradient(90deg,#8be46f,#2f9a3a); }
+.st { display:flex; gap:8px; align-items:center; }
+.st .face { font-size:34px; }
+.st .nm { font-weight:900; font-size:15px; }
+.hero { background:#fff; border:2px solid #111; border-radius:14px; padding:12px; display:flex; gap:10px; align-items:center; margin-bottom:10px; }
+.hero .big { font-size:84px; line-height:1; }
+.hero p { margin:0; font-size:13px; line-height:1.6; font-weight:700; }
+.classes { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+.cls { background:#fff; border:2px solid #111; border-radius:12px; padding:10px 8px 8px; text-align:center; }
+.cls.on { outline:3px solid #2f9a3a; }
+.cls .rowf { font-size:28px; }
+.cls .lab { font-size:11px; font-weight:900; margin-top:6px; }
+.sec { font-size:11px; font-weight:900; margin:12px 0 8px; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.item { background:#fff; border:2px solid #111; border-radius:12px; padding:11px 8px; text-align:center; font-weight:900; font-size:14px; }
+.item.on { background:#e7f8df; }
+.item.bad.on { background:#fde8e8; }
+.item .emo { display:block; font-size:20px; }
+.reset, .shareb { width:100%; margin-top:10px; border:2px solid #111; border-radius:10px; padding:12px; font-weight:900; background:#4d5d66; color:#fff; font-size:15px; }
+.shareb { background:#fff; color:#111; }
+.week { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin:10px 0 14px; }
+.day { background:#fff; border:2px solid #111; border-radius:10px; padding:6px 2px 7px; text-align:center; }
+.day .w { font-size:10px; font-weight:900; }
+.day .f { font-size:22px; line-height:1.2; min-height:24px; }
+.day .p { font-size:10px; font-weight:900; color:#2f9a3a; }
+.day.empty { opacity:.45; }
+.day.today { outline:3px solid #2f9a3a; }
+.book { background:#fff; border:2px solid #111; border-radius:12px; padding:12px; margin-bottom:10px; }
+.book h2 { margin:0 0 8px; font-size:14px; text-align:center; }
+.types { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.type { border:2px solid #111; border-radius:10px; padding:8px 6px; text-align:center; opacity:.38; }
+.type.got { opacity:1; background:#f3fff0; }
+.type .f { font-size:36px; }
+.type .n { font-size:11px; font-weight:900; }
+.type .c { font-size:10px; color:#555; font-weight:700; }
+.sum { text-align:center; font-size:13px; font-weight:800; line-height:1.6; margin:8px 0 0; }
+.toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(12px); background:#111; color:#fff; padding:10px 14px; border-radius:999px; font-size:13px; opacity:0; transition:.2s; pointer-events:none; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
 </head>
 <body>
-  <div class="phone">
-    <div class="banner"><h1>今日のあなたの <span class="heart">❤</span><br><em>ゾンビ度診断アプリ</em></h1></div>
+<div class="phone">
+  <div class="banner"><h1>今日のあなたの <span class="heart">❤</span><br><em>ゾンビ度診断アプリ</em></h1></div>
+  <div class="tabs">
+    <button class="on" id="tabToday" onclick="showTab('today')">今日</button>
+    <button id="tabBook" onclick="showTab('book')">週間図鑑</button>
+  </div>
+  <section id="today">
     <div class="block-title">【今日のゾンビ度診断】</div>
-    <p class="block-sub" id="todayLabel">ボタンを押すと、その場でクラスが変わります</p>
+    <p class="block-sub" id="todayLabel"></p>
     <div class="status">
       <div class="box"><div class="k">ゾンビ度：</div><div class="pct" id="pct">80%</div><div class="bar"><i id="bar"></i></div></div>
       <div class="box"><div class="k">今日のステータス：</div><div class="st"><div class="face" id="face">🧟</div><div class="nm" id="rankName">ヤッフルゾンビ</div></div></div>
     </div>
-    <div class="hero"><div class="big" id="heroFace">🧟</div><p id="advice">意識はあるが、動きが鈍く「アーン」と口から漏れやすい状態。早めの糖分補給を。</p></div>
+    <div class="hero"><div class="big" id="heroFace">🧟</div><p id="advice"></p></div>
     <div class="classes">
-      <div class="cls" id="clsHuman"><div class="rowf">🧢🔦</div><div class="lab">生存者クラス (〜44%)</div></div>
-      <div class="cls on" id="clsZombie"><div class="rowf">🧟🧟</div><div class="lab">ゾンビクラス (45%+)</div></div>
+      <div class="cls" id="clsHuman"><div class="rowf">🧢🔦</div><div class="lab">生存者クラス</div></div>
+      <div class="cls" id="clsZombie"><div class="rowf">🧟🧟</div><div class="lab">ゾンビクラス</div></div>
     </div>
     <div class="sec">回復アクション</div><div class="grid" id="good"></div>
     <div class="sec">ゾンビアクション</div><div class="grid" id="bad"></div>
-    <div class="sheet">
-      <h2>【詳細コンプリート】</h2>
-      <div class="poses"><span>🏃</span><span>🧟</span></div>
-      <div class="cap"><span>走るゾンビ</span><span>シャッフルゾンビ</span></div>
-      <p class="note" id="sheetNote">これらの特徴から今日のタイプを判定</p>
-    </div>
-    <button class="reset" onclick="resetToday()">診断を終了して閉じる</button>
+    <button class="reset" onclick="resetToday()">今日をリセット</button>
     <button class="shareb" onclick="share()">Share</button>
-  </div>
-  <div class="toast" id="toast"></div>
+  </section>
+  <section id="book" class="hidden">
+    <div class="block-title">【週間図鑑】</div>
+    <p class="block-sub">この7日で出た顔がコンプリートされます</p>
+    <div class="week" id="week"></div>
+    <div class="book">
+      <h2>【詳細コンプリート】</h2>
+      <div class="types" id="types"></div>
+      <p class="sum" id="sum"></p>
+    </div>
+    <button class="shareb" onclick="shareWeek()">週間をシェア</button>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
 <script>
 const BASE = 80;
 const GOOD = [
@@ -97,53 +120,110 @@ const BAD = [
   { id:"groan", emo:"😩", label:"アーンと出た", d:11 }
 ];
 const RANKS = [
-  { min:0, name:"生存者", face:"🙂", cls:"human", advice:"意識も足取りも人間側。このまま水と光を忘れずに。", pose:"走れる生存者" },
-  { min:25, name:"半覚醒生存者", face:"😌", cls:"human", advice:"まだ目が細い。糖分と2分の歩行でクラスを維持。", pose:"走れる / やや鈍い" },
-  { min:45, name:"ヤッフルゾンビ", face:"🧟", cls:"zombie", advice:"意識はあるが、動きが鈍く「アーン」と口から漏れやすい状態。早めの糖分補給を。", pose:"シャッフルゾンビ" },
-  { min:70, name:"走るゾンビ", face:"🧟‍♂️", cls:"zombie", advice:"足は動くが方向が怪しい。水を飲んで速度を落とす。", pose:"Runner Zombie" },
-  { min:88, name:"スタンディングゾンビ", face:"😵", cls:"zombie", advice:"その場シャッフル。予定より生存。横になってリセット。", pose:"Standing / Shuffle" }
+  { id:"human", min:0, name:"生存者", face:"🙂", cls:"human", advice:"意識も足取りも人間側。このまま水と光を忘れずに。" },
+  { id:"half", min:25, name:"半覚醒生存者", face:"😌", cls:"human", advice:"まだ目が細い。糖分と2分の歩行でクラスを維持。" },
+  { id:"yaffle", min:45, name:"ヤッフルゾンビ", face:"🧟", cls:"zombie", advice:"意識はあるが、動きが鈍く「アーン」と口から漏れやすい状態。早めの糖分補給を。" },
+  { id:"runner", min:70, name:"走るゾンビ", face:"🏃", cls:"zombie", advice:"足は動くが方向が怪しい。水を飲んで速度を落とす。" },
+  { id:"stand", min:88, name:"スタンディングゾンビ", face:"😵", cls:"zombie", advice:"その場シャッフル。予定より生存。横になってリセット。" }
 ];
-const key = "zombieTaste-" + new Date().toDateString();
-let on = {};
-try { on = JSON.parse(localStorage.getItem(key)) || {}; } catch(e){}
-function save(){ try { localStorage.setItem(key, JSON.stringify(on)); } catch(e){} }
-function rankFor(p){ let r = RANKS[0]; RANKS.forEach(x => { if(p>=x.min) r=x; }); return r; }
-function score(){ let p = BASE; GOOD.concat(BAD).forEach(it => { if(on[it.id]) p += it.d; }); return Math.max(3, Math.min(99, p)); }
+function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function todayKey(){ return ymd(new Date()); }
+function rankFor(p){ let r=RANKS[0]; RANKS.forEach(x=>{ if(p>=x.min) r=x; }); return r; }
+function loadAll(){ try { return JSON.parse(localStorage.getItem("zombieWeek")||"{}"); } catch(e){ return {}; } }
+function saveAll(db){ try { localStorage.setItem("zombieWeek", JSON.stringify(db)); } catch(e){} }
+let db = loadAll();
+if(!db[todayKey()]) db[todayKey()] = { on:{}, p:BASE };
+let on = db[todayKey()].on || {};
+function scoreOf(map){
+  let p=BASE;
+  GOOD.concat(BAD).forEach(it=>{ if(map[it.id]) p+=it.d; });
+  return Math.max(3, Math.min(99,p));
+}
+function persist(){
+  const p = scoreOf(on);
+  const r = rankFor(p);
+  db[todayKey()] = { on:on, p:p, name:r.name, face:r.face, id:r.id, cls:r.cls };
+  saveAll(db);
+}
 function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1400); }
+function showTab(id){
+  document.getElementById("today").classList.toggle("hidden", id!=="today");
+  document.getElementById("book").classList.toggle("hidden", id!=="book");
+  document.getElementById("tabToday").classList.toggle("on", id==="today");
+  document.getElementById("tabBook").classList.toggle("on", id==="book");
+  if(id==="book") renderBook();
+}
 function btns(el, list, bad){
   el.innerHTML = list.map(it =>
     '<button class="item '+(bad?"bad ":"")+(on[it.id]?"on":"")+'" onclick="toggle(\''+it.id+'\')"><span class="emo">'+it.emo+"</span>"+it.label+"</button>"
   ).join("");
 }
-function render(){
-  const p = score(), r = rankFor(p);
-  document.getElementById("pct").textContent = p+"%";
-  document.getElementById("bar").style.width = p+"%";
-  document.getElementById("rankName").textContent = r.name;
-  document.getElementById("face").textContent = r.face;
-  document.getElementById("heroFace").textContent = r.face;
-  document.getElementById("advice").textContent = r.advice;
+function renderToday(){
+  const p=scoreOf(on), r=rankFor(p);
+  document.getElementById("pct").textContent=p+"%";
+  document.getElementById("bar").style.width=p+"%";
+  document.getElementById("rankName").textContent=r.name;
+  document.getElementById("face").textContent=r.face;
+  document.getElementById("heroFace").textContent=r.face;
+  document.getElementById("advice").textContent=r.advice;
   document.getElementById("clsHuman").classList.toggle("on", r.cls==="human");
   document.getElementById("clsZombie").classList.toggle("on", r.cls==="zombie");
-  document.getElementById("sheetNote").textContent = "今日のタイプ：" + r.pose;
   btns(document.getElementById("good"), GOOD, false);
   btns(document.getElementById("bad"), BAD, true);
+  persist();
+}
+function last7(){
+  const arr=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    arr.push({ d:d, k:ymd(d), rec:db[ymd(d)], today:i===0 });
+  }
+  return arr;
+}
+function renderBook(){
+  const days = last7();
+  const wd = ["日","月","火","水","木","金","土"];
+  document.getElementById("week").innerHTML = days.map(x=>{
+    if(!x.rec || !x.rec.name){
+      return '<div class="day empty'+(x.today?" today":"")+'"><div class="w">'+wd[x.d.getDay()]+'</div><div class="f">·</div><div class="p">-</div></div>';
+    }
+    return '<div class="day'+(x.today?" today":"")+'"><div class="w">'+wd[x.d.getDay()]+'</div><div class="f">'+x.rec.face+'</div><div class="p">'+x.rec.p+'%</div></div>';
+  }).join("");
+  const got = {};
+  days.forEach(x=>{ if(x.rec && x.rec.id) got[x.rec.id]=true; });
+  document.getElementById("types").innerHTML = RANKS.map(r=>{
+    const n = days.filter(x=>x.rec && x.rec.id===r.id).length;
+    return '<div class="type '+(got[r.id]?"got":"")+'"><div class="f">'+r.face+'</div><div class="n">'+r.name+'</div><div class="c">'+(got[r.id]?(n+"日出現"):"未確認")+'</div></div>';
+  }).join("");
+  const filled = days.filter(x=>x.rec && x.rec.name).length;
+  const z = days.filter(x=>x.rec && x.rec.cls==="zombie").length;
+  const avg = filled ? Math.round(days.reduce((s,x)=>s+(x.rec&&x.rec.p||0),0)/filled) : 0;
+  document.getElementById("sum").textContent = filled+"日記録 / 平均ゾンビ度 "+avg+"% / ゾンビクラス "+z+"日 / コンプ "+Object.keys(got).length+" / "+RANKS.length;
 }
 function toggle(id){
-  on[id] = !on[id]; save(); render();
-  const it = GOOD.concat(BAD).find(x=>x.id===id);
+  on[id]=!on[id]; persist(); renderToday();
+  const it=GOOD.concat(BAD).find(x=>x.id===id);
   toast((on[id]?"記録：":"取消：")+it.label);
 }
-function resetToday(){ on={}; save(); render(); toast("今日をリセット"); }
+function resetToday(){ on={}; persist(); renderToday(); toast("今日をリセット"); }
 async function share(){
-  const p=score(), r=rankFor(p);
-  const did = GOOD.concat(BAD).filter(x=>on[x.id]).map(x=>x.label).join(" / ") || "未記録";
-  const text = "今日のゾンビ度 "+p+"%（"+r.name+"）\n"+r.advice+"\n"+did;
+  const p=scoreOf(on), r=rankFor(p);
+  const text="今日のゾンビ度 "+p+"%（"+r.name+"）\n"+r.advice;
   if(navigator.share){ try{ await navigator.share({title:"ゾンビ度診断", text}); return;}catch(e){} }
   if(navigator.clipboard) navigator.clipboard.writeText(text).then(()=>toast("コピーした"));
 }
+async function shareWeek(){
+  const days=last7();
+  const line=days.map(x=>{
+    const wd=["日","月","火","水","木","金","土"][x.d.getDay()];
+    return wd+(x.rec&&x.rec.face?x.rec.face+x.rec.p+"%":"·");
+  }).join(" ");
+  const text="週間ゾンビ図鑑\n"+line;
+  if(navigator.share){ try{ await navigator.share({title:"週間ゾンビ図鑑", text}); return;}catch(e){} }
+  if(navigator.clipboard) navigator.clipboard.writeText(text).then(()=>toast("コピーした"));
+}
 document.getElementById("todayLabel").textContent = "本日（"+(new Date().getMonth()+1)+"月"+new Date().getDate()+"日）ボタンでクラス判定";
-render();
+renderToday();
 </script>
 </body>
 </html>
