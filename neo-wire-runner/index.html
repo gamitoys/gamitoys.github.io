@@ -17,39 +17,37 @@
     canvas#fx { position:absolute; inset:0; width:100%; height:100%; display:block; }
     #crt { pointer-events:none; position:absolute; inset:0; background:radial-gradient(ellipse at center,transparent 42%,rgba(0,0,0,.55) 100%),repeating-linear-gradient(0deg,rgba(0,255,255,.045) 0 1px,transparent 1px 3px); z-index:4; }
     #hud { position:absolute; left:10px; right:10px; top:8px; z-index:6; pointer-events:none; }
-    #barwrap { height:10px; border:1px solid #00e8ff88; background:#001018; box-shadow:0 0 10px #00e8ff33; }
-    #bar { height:100%; width:100%; background:var(--lime); box-shadow:0 0 8px var(--lime); }
-    #bar.warn { background:var(--gold); box-shadow:0 0 8px var(--gold); }
-    #bar.dead { background:var(--mag); box-shadow:0 0 10px var(--mag); }
+    #barwrap { height:10px; border:1px solid #00e8ff88; background:#001018; }
+    #bar { height:100%; width:100%; background:var(--lime); }
+    #bar.warn { background:var(--gold); }
+    #bar.dead { background:var(--mag); }
     #hudrow { display:flex; justify-content:space-between; margin-top:6px; font-size:12px; letter-spacing:1.5px; text-shadow:0 0 8px var(--cyan); }
     #dots { margin-top:6px; letter-spacing:4px; font-size:12px; color:var(--lime); }
-    #msg { position:absolute; left:50%; top:18%; transform:translateX(-50%); z-index:7; text-align:center; font-size:13px; letter-spacing:2px; text-shadow:0 0 10px var(--cyan); opacity:0; transition:opacity .2s; pointer-events:none; width:90%; }
+    #msg { position:absolute; left:50%; top:18%; transform:translateX(-50%); z-index:7; text-align:center; font-size:13px; letter-spacing:2px; opacity:0; transition:opacity .2s; pointer-events:none; width:90%; }
     #msg.show { opacity:1; }
     #combat { display:none; position:absolute; inset:0; z-index:8; pointer-events:none; }
     #combat.on { display:block; }
-    #ring { position:absolute; left:50%; top:38%; width:148px; height:148px; margin:-74px 0 0 -74px; border:2px solid #ff2bd688; border-radius:50%; box-shadow:0 0 18px #ff2bd644, inset 0 0 18px #ff2bd622; }
-    #sweet { position:absolute; left:50%; top:0; width:10px; height:18px; margin-left:-5px; background:var(--lime); box-shadow:0 0 10px var(--lime); border-radius:2px; }
-    #needle { position:absolute; left:50%; top:50%; width:2px; height:68px; margin:-68px 0 0 -1px; background:#fff; transform-origin:50% 100%; box-shadow:0 0 8px #fff; }
-    #cname { position:absolute; left:0; right:0; top:52%; text-align:center; color:var(--mag); letter-spacing:3px; font-size:13px; text-shadow:0 0 10px var(--mag); }
-    #deck { flex:0 0 auto; padding:8px 10px calc(10px + env(safe-area-inset-bottom)); background:linear-gradient(#0000,#000 18%); display:grid; grid-template-columns:1fr 1fr 1fr 1.15fr; grid-template-rows:54px 62px; gap:8px; z-index:9; }
-    .pad { border:1px solid #00e8ff66; background:rgba(0,20,32,.72); color:var(--cyan); font:700 11px/1 inherit; letter-spacing:1px; border-radius:8px; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 0 12px #00e8ff14; }
+    #ring { position:absolute; left:50%; top:38%; width:148px; height:148px; margin:-74px 0 0 -74px; border:2px solid #ff2bd688; border-radius:50%; }
+    #sweet { position:absolute; left:50%; top:0; width:10px; height:18px; margin-left:-5px; background:var(--lime); border-radius:2px; }
+    #needle { position:absolute; left:50%; top:50%; width:2px; height:68px; margin:-68px 0 0 -1px; background:#fff; transform-origin:50% 100%; }
+    #cname { position:absolute; left:0; right:0; top:52%; text-align:center; color:var(--mag); letter-spacing:3px; font-size:13px; }
+    #deck { flex:0 0 auto; padding:8px 10px calc(10px + env(safe-area-inset-bottom)); display:grid; grid-template-columns:1fr 1fr 1fr 1.15fr; grid-template-rows:54px 62px; gap:8px; z-index:9; }
+    .pad { border:1px solid #00e8ff66; background:rgba(0,20,32,.72); color:var(--cyan); font:700 11px/1 inherit; letter-spacing:1px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
     .pad:active,.pad.down { background:#00e8ff; color:#001018; }
     #p-l { grid-column:1; grid-row:1 / span 2; }
     #p-r { grid-column:3; grid-row:1 / span 2; }
     #p-f { grid-column:2; grid-row:1; }
     #p-u { grid-column:2; grid-row:2; font-size:10px; }
-    #p-h { grid-column:4; grid-row:1 / span 2; border-radius:14px; border-color:#ff2bd666; color:var(--mag); font-size:14px; letter-spacing:2px; }
-    #p-h.lit { border-color:var(--lime); color:#001018; background:var(--lime); box-shadow:0 0 18px #b6ff0088; }
-    #p-h:active,#p-h.down { filter:brightness(1.2); }
+    #p-h { grid-column:4; grid-row:1 / span 2; border-radius:14px; border-color:#ff2bd666; color:var(--mag); font-size:14px; }
+    #p-h.lit { border-color:var(--lime); color:#001018; background:var(--lime); }
     #overlay { position:absolute; inset:0; z-index:20; background:rgba(0,0,4,.82); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px 18px; }
     #overlay.hidden { display:none; }
-    #overlay h1 { font-size:clamp(22px,7vw,34px); letter-spacing:3px; text-shadow:0 0 16px var(--cyan); margin-bottom:8px; }
+    #overlay h1 { font-size:clamp(22px,7vw,34px); letter-spacing:3px; margin-bottom:8px; }
     #overlay .sub { opacity:.75; font-size:12px; letter-spacing:2px; margin-bottom:18px; }
     #overlay .box { border:1px solid #00e8ff44; background:rgba(0,12,20,.7); padding:12px 14px; max-width:340px; width:92%; font-size:12px; line-height:1.7; text-align:left; margin-bottom:18px; }
-    #overlay button { min-width:min(280px,86vw); min-height:52px; border:2px solid var(--lime); background:rgba(20,30,0,.8); color:var(--lime); font:700 16px inherit; letter-spacing:3px; box-shadow:0 0 16px #b6ff0044; }
-    #overlay button:active { background:var(--lime); color:#001008; }
-    #stats { margin-top:12px; font-size:12px; letter-spacing:1px; line-height:1.8; color:#cffffa; }
-    #rotate { display:none; position:fixed; inset:0; z-index:40; background:#000; color:var(--cyan); align-items:center; justify-content:center; flex-direction:column; letter-spacing:2px; text-align:center; }
+    #overlay button { min-width:min(280px,86vw); min-height:52px; border:2px solid var(--lime); background:rgba(20,30,0,.8); color:var(--lime); font:700 16px inherit; letter-spacing:3px; }
+    #stats { margin-top:12px; font-size:12px; }
+    #rotate { display:none; position:fixed; inset:0; z-index:40; background:#000; color:var(--cyan); align-items:center; justify-content:center; flex-direction:column; }
     @media (orientation:landscape) and (pointer:coarse) and (max-height:500px) { #rotate { display:flex; } }
   </style>
 </head>
@@ -67,21 +65,22 @@
       <div id="combat"><div id="ring"><div id="sweet"></div><div id="needle"></div></div><div id="cname">ICE-WORM</div></div>
       <div id="overlay">
         <h1>NEO-WIRE RUNNER</h1>
-        <div class="sub">60秒潜入ハクスラ / 縦持ち</div>
-        <div class="box">親指だけで走る。制限時間は60秒。<br>マゼンタは敵。ゴールドはTRACE。ライムはゲート。<br>敵の前で HACK。針が頂点のとき Perfect。<br>ゲートで脱出。時間切れは所持の半分をロスト。</div>
+        <div class="sub">60-SEC DIVE / PORTRAIT</div>
+        <div class="box">Thumb only. 60 seconds.<br>Magenta=enemy Gold=TRACE Lime=GATE<br>HACK when the needle hits the top.<br>Extract at the gate. Timeout loses half.</div>
         <button id="dive">DIVE</button>
         <div id="stats"></div>
       </div>
     </div>
     <div id="deck">
-      <button class="pad" id="p-l">◀ 左</button>
-      <button class="pad" id="p-f">▲ 前進</button>
-      <button class="pad" id="p-r">右 ▶</button>
-      <button class="pad" id="p-u">180°</button>
+      <button class="pad" id="p-l">LEFT</button>
+      <button class="pad" id="p-f">FWD</button>
+      <button class="pad" id="p-r">RIGHT</button>
+      <button class="pad" id="p-u">180</button>
       <button class="pad" id="p-h">HACK</button>
     </div>
   </div>
-  <div id="rotate">縦持ちでプレイ</div>
-  <script src="game.js"></script>
+  <div id="rotate">TURN PHONE</div>
+  <script src="game-a.js"></script>
+  <script src="game-b.js"></script>
 </body>
 </html>
