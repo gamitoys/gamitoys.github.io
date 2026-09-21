@@ -4,14 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#000000" />
   <title>NEO-WIRE RUNNER</title>
   <style>
     :root { --cyan:#00e8ff; --mag:#ff2bd6; --lime:#b6ff00; --gold:#ffd24a; --bg:#010105; }
     * { box-sizing:border-box; margin:0; padding:0; }
-    html,body { width:100%; height:100%; background:var(--bg); color:var(--cyan); font-family:"SF Mono","Menlo","Courier New",monospace; overflow:hidden; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent; }
+    html,body { width:100%; height:100%; background:var(--bg); color:var(--cyan); font-family:"Hiragino Sans","Yu Gothic",sans-serif; overflow:hidden; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent; }
     #app { position:fixed; inset:0; display:flex; flex-direction:column; padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
     #view { position:relative; flex:1 1 auto; min-height:0; }
     canvas#fx { position:absolute; inset:0; width:100%; height:100%; display:block; }
@@ -21,33 +19,36 @@
     #bar { height:100%; width:100%; background:var(--lime); }
     #bar.warn { background:var(--gold); }
     #bar.dead { background:var(--mag); }
-    #hudrow { display:flex; justify-content:space-between; margin-top:6px; font-size:12px; letter-spacing:1.5px; text-shadow:0 0 8px var(--cyan); }
-    #dots { margin-top:6px; letter-spacing:4px; font-size:12px; color:var(--lime); }
-    #msg { position:absolute; left:50%; top:18%; transform:translateX(-50%); z-index:7; text-align:center; font-size:13px; letter-spacing:2px; opacity:0; transition:opacity .2s; pointer-events:none; width:90%; }
+    #hudrow { display:flex; justify-content:space-between; margin-top:6px; font-size:13px; letter-spacing:1px; text-shadow:0 0 8px var(--cyan); }
+    #dots { margin-top:6px; letter-spacing:3px; font-size:13px; color:var(--lime); }
+    #msg { position:absolute; left:50%; top:16%; transform:translateX(-50%); z-index:7; text-align:center; font-size:15px; letter-spacing:1px; opacity:0; transition:opacity .2s; pointer-events:none; width:90%; text-shadow:0 0 8px #00e8ff; }
     #msg.show { opacity:1; }
     #combat { display:none; position:absolute; inset:0; z-index:8; pointer-events:none; }
     #combat.on { display:block; }
-    #ring { position:absolute; left:50%; top:38%; width:148px; height:148px; margin:-74px 0 0 -74px; border:2px solid #ff2bd688; border-radius:50%; }
+    #ring { position:absolute; left:50%; top:36%; width:148px; height:148px; margin:-74px 0 0 -74px; border:2px solid #ff2bd688; border-radius:50%; }
     #sweet { position:absolute; left:50%; top:0; width:10px; height:18px; margin-left:-5px; background:var(--lime); border-radius:2px; }
     #needle { position:absolute; left:50%; top:50%; width:2px; height:68px; margin:-68px 0 0 -1px; background:#fff; transform-origin:50% 100%; }
-    #cname { position:absolute; left:0; right:0; top:52%; text-align:center; color:var(--mag); letter-spacing:3px; font-size:13px; }
+    #cname { position:absolute; left:0; right:0; top:50%; text-align:center; color:var(--mag); font-size:14px; }
+    #hint { position:absolute; left:0; right:0; top:58%; text-align:center; color:var(--lime); font-size:13px; display:none; }
+    #combat.on #hint { display:block; }
     #deck { flex:0 0 auto; padding:8px 10px calc(10px + env(safe-area-inset-bottom)); display:grid; grid-template-columns:1fr 1fr 1fr 1.15fr; grid-template-rows:54px 62px; gap:8px; z-index:9; }
-    .pad { border:1px solid #00e8ff66; background:rgba(0,20,32,.72); color:var(--cyan); font:700 11px/1 inherit; letter-spacing:1px; border-radius:8px; display:flex; align-items:center; justify-content:center; }
+    .pad { border:1px solid #00e8ff66; background:rgba(0,20,32,.72); color:var(--cyan); font:700 14px/1.2 sans-serif; border-radius:8px; display:flex; align-items:center; justify-content:center; }
     .pad:active,.pad.down { background:#00e8ff; color:#001018; }
     #p-l { grid-column:1; grid-row:1 / span 2; }
     #p-r { grid-column:3; grid-row:1 / span 2; }
     #p-f { grid-column:2; grid-row:1; }
-    #p-u { grid-column:2; grid-row:2; font-size:10px; }
-    #p-h { grid-column:4; grid-row:1 / span 2; border-radius:14px; border-color:#ff2bd666; color:var(--mag); font-size:14px; }
+    #p-u { grid-column:2; grid-row:2; font-size:12px; }
+    #p-h { grid-column:4; grid-row:1 / span 2; border-radius:14px; border-color:#ff2bd666; color:var(--mag); font-size:16px; }
     #p-h.lit { border-color:var(--lime); color:#001018; background:var(--lime); }
-    #overlay { position:absolute; inset:0; z-index:20; background:rgba(0,0,4,.82); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px 18px; }
+    #overlay { position:absolute; inset:0; z-index:20; background:rgba(0,0,4,.88); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px 16px; }
     #overlay.hidden { display:none; }
-    #overlay h1 { font-size:clamp(22px,7vw,34px); letter-spacing:3px; margin-bottom:8px; }
-    #overlay .sub { opacity:.75; font-size:12px; letter-spacing:2px; margin-bottom:18px; }
-    #overlay .box { border:1px solid #00e8ff44; background:rgba(0,12,20,.7); padding:12px 14px; max-width:340px; width:92%; font-size:12px; line-height:1.7; text-align:left; margin-bottom:18px; }
-    #overlay button { min-width:min(280px,86vw); min-height:52px; border:2px solid var(--lime); background:rgba(20,30,0,.8); color:var(--lime); font:700 16px inherit; letter-spacing:3px; }
-    #stats { margin-top:12px; font-size:12px; }
-    #rotate { display:none; position:fixed; inset:0; z-index:40; background:#000; color:var(--cyan); align-items:center; justify-content:center; flex-direction:column; }
+    #overlay h1 { font-size:clamp(20px,6vw,30px); letter-spacing:2px; margin-bottom:6px; }
+    #overlay .sub { opacity:.8; font-size:13px; margin-bottom:14px; }
+    #overlay .box { border:1px solid #00e8ff44; background:rgba(0,12,20,.78); padding:12px 14px; max-width:340px; width:92%; font-size:14px; line-height:1.75; text-align:left; margin-bottom:16px; }
+    #overlay .box b { color:var(--lime); }
+    #overlay button { min-width:min(280px,86vw); min-height:52px; border:2px solid var(--lime); background:rgba(20,30,0,.8); color:var(--lime); font:700 18px sans-serif; }
+    #stats { margin-top:10px; font-size:12px; }
+    #rotate { display:none; position:fixed; inset:0; z-index:40; background:#000; color:var(--cyan); align-items:center; justify-content:center; flex-direction:column; font-size:18px; }
     @media (orientation:landscape) and (pointer:coarse) and (max-height:500px) { #rotate { display:flex; } }
   </style>
 </head>
@@ -58,28 +59,39 @@
       <div id="crt"></div>
       <div id="hud">
         <div id="barwrap"><div id="bar"></div></div>
-        <div id="hudrow"><span id="time">60.0</span><span id="node">NODE 00</span><span id="gate">GATE --</span></div>
-        <div id="dots">INTEGRITY ●●●</div>
+        <div id="hudrow"><span id="time">60.0秒</span><span id="node">歩数 00</span><span id="gate">出口 --</span></div>
+        <div id="dots">HP ●●●</div>
       </div>
       <div id="msg"></div>
-      <div id="combat"><div id="ring"><div id="sweet"></div><div id="needle"></div></div><div id="cname">ICE-WORM</div></div>
+      <div id="combat">
+        <div id="ring"><div id="sweet"></div><div id="needle"></div></div>
+        <div id="cname">敵</div>
+        <div id="hint">白い針が上に来たら HACK</div>
+      </div>
       <div id="overlay">
         <h1>NEO-WIRE RUNNER</h1>
-        <div class="sub">60-SEC DIVE / PORTRAIT</div>
-        <div class="box">Thumb only. 60 seconds.<br>Magenta=enemy Gold=TRACE Lime=GATE<br>HACK when the needle hits the top.<br>Extract at the gate. Timeout loses half.</div>
-        <button id="dive">DIVE</button>
+        <div class="sub">60秒で走って出口へ</div>
+        <div class="box">
+          <b>やることは3つだけ</b><br>
+          1. 「前進」で進む。左右で曲がる<br>
+          2. 赤い敵が出たら、針が上に来たとき「HACK」<br>
+          3. 緑の出口に入るとクリア<br><br>
+          黄 = 宝箱　赤 = 敵　緑 = 出口<br>
+          時間切れだと宝の半分を落とす
+        </div>
+        <button id="dive">はじめる</button>
         <div id="stats"></div>
       </div>
     </div>
     <div id="deck">
-      <button class="pad" id="p-l">LEFT</button>
-      <button class="pad" id="p-f">FWD</button>
-      <button class="pad" id="p-r">RIGHT</button>
-      <button class="pad" id="p-u">180</button>
+      <button class="pad" id="p-l">左</button>
+      <button class="pad" id="p-f">前進</button>
+      <button class="pad" id="p-r">右</button>
+      <button class="pad" id="p-u">振り向き</button>
       <button class="pad" id="p-h">HACK</button>
     </div>
   </div>
-  <div id="rotate">TURN PHONE</div>
+  <div id="rotate">縦に持ってください</div>
   <script src="game-a.js"></script>
   <script src="game-b.js"></script>
 </body>
