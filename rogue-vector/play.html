@@ -3,31 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="Rogue Vector+">
 <meta name="theme-color" content="#000000">
 <title>Rogue Vector+</title>
-<style>html,body{margin:0;background:#000;color:#ff9a3c;font-family:monospace}#s{padding:24px}</style>
+<style>
+html,body{margin:0;background:#000;color:#ff9a3c;font-family:'Courier New',monospace;}
+main{max-width:420px;margin:0 auto;padding:28px 16px;}
+a{color:#7dff6a;}
+.box{border:1px solid #ff9a3c;padding:14px;margin:18px 0;line-height:1.6;}
+</style>
 </head>
 <body>
-<p id="s">LOADING GAME…</p>
-<script>
-async function boot(){
-  try {
-    const parts = await Promise.all([0,1,2,3].map(i => fetch('p'+i+'.txt',{cache:'no-store'}).then(r=>{
-      if(!r.ok) throw new Error('part '+i+' '+r.status);
-      return r.text();
-    })));
-    const html = parts.join('');
-    document.open();
-    document.write(html);
-    document.close();
-  } catch(e){
-    document.getElementById('s').textContent = 'LOAD FAIL: '+e;
-  }
-}
-boot();
-</script>
+<main>
+  <h1>ROGUE VECTOR+</h1>
+  <div class="box">
+    ここはまだゲーム本体ではありません。PLACEHOLDER は仮の文字です。
+  </div>
+  <p><a href="./"></a></p>
+  <p><a href="./"></a></p>
+</main>
 </body>
 </html>
